@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "description": "Auth Server for Contact Tracing",
+    "version": "1.0.0",
+    "title": "Auth Server"
+  },
+  "tags": [
+    {
+      "name": "Authentication Service",
+      "description": "All the necessary endpoints to ensure a private and secure authentication experience"
+    }
+  ],
+  "paths": {
+    "/signUp": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "create a new email and password user",
+        "operationId": "signUp",
+        "requestBody": {
+          "description": "Created user object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/signUpRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/signUpResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          },
+          "409": {
+            "description": "User already registered"
+          }
+        }
+      }
+    },
+    "/signIn": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Log in with email and password",
+        "operationId": "signIn",
+        "requestBody": {
+          "description": "Login user",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/signInRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/signInResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email not found / Invalid password / User disabled"
+          }
+        }
+      }
+    },
+    "/refreshToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Obtain a new ID Token providing the refresh Token",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "description": "Refresh Token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/refreshTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ID Token generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/refreshTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Refresh Token expired, missing or invalid / Invalid password / User disabled or not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "signUpRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "O3J0JN1LKLSDFMLN4156"
+          }
+        }
+      },
+      "signUpResponse": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "lkj12341injh98nv98"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          }
+        }
+      },
+      "signInRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "O3J0JN1LKLSDFMLN4156"
+          }
+        }
+      },
+      "signInResponse": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "lkj12341injh98nv98"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "registered": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "refreshTokenRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "lkj12341injh98nv98"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "O3J0JN1LKLSDFMLN4156"
+          }
+        }
+      },
+      "refreshTokenResponse": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "registered": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}
