@@ -149,6 +149,84 @@
           }
         }
       }
+    },
+    "/generateGenuxToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Obtain a new Genux Token providing the ID Token",
+        "operationId": "generateGenuxToken",
+        "requestBody": {
+          "description": "Generate Genux Token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/generateGenuxTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Genux Token generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/generateGenuxTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID Token expired, missing or invalid"
+          }
+        }
+      }
+    },
+    "/useGenuxToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Use a Genux Token and disable it",
+        "operationId": "useGenuxToken",
+        "requestBody": {
+          "description": "Use Genux Token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/useGenuxTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Genux Token used successfully"
+          },
+          "400": {
+            "description": "Genux Token already used, invalid or does not exist"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -272,6 +350,45 @@
           "registered": {
             "type": "boolean",
             "example": true
+          }
+        }
+      },
+      "generateGenuxTokenRequest": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "O3J0JN1LKLSDFMLN4156"
+          }
+        }
+      },
+      "generateGenuxTokenResponse": {
+        "type": "object",
+        "properties": {
+          "genuxToken": {
+            "type": "string",
+            "example": "pomnopiu1poi5poiu1212345"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          }
+        }
+      },
+      "useGenuxTokenRequest": {
+        "type": "object",
+        "properties": {
+          "genuxToken": {
+            "type": "string",
+            "example": "pomnopiu1poi5poiu1212345"
+          },
+          "apiKey": {
+            "type": "string",
+            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       }
