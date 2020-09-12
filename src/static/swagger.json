@@ -241,10 +241,6 @@
           "password": {
             "type": "string",
             "example": "securePassword"
-          },
-          "apiKey": {
-            "type": "string",
-            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       },
@@ -283,10 +279,6 @@
           "password": {
             "type": "string",
             "example": "securePassword"
-          },
-          "apiKey": {
-            "type": "string",
-            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       },
@@ -325,10 +317,6 @@
           "refreshToken": {
             "type": "string",
             "example": "lkj12341injh98nv98"
-          },
-          "apiKey": {
-            "type": "string",
-            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       },
@@ -359,10 +347,6 @@
           "idToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
-          },
-          "apiKey": {
-            "type": "string",
-            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       },
@@ -385,10 +369,6 @@
           "genuxToken": {
             "type": "string",
             "example": "pomnopiu1poi5poiu1212345"
-          },
-          "apiKey": {
-            "type": "string",
-            "example": "O3J0JN1LKLSDFMLN4156"
           }
         }
       }
