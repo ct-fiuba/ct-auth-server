@@ -73,4 +73,54 @@ describe('App test', () => {
       });
     });
   });
+
+  describe('signUp', () => {
+    const valid_user = {
+      email: user_email,
+      password
+    };
+
+    const invalid_user = {
+      email: user_email,
+      password: invalid_password
+    }
+
+    describe('sign in user success', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+        .post('/accounts:signInWithPassword?key=test', { ...valid_user, returnSecureToken: true })
+        .reply(200, { idToken, email: user_email, refreshToken, expiresIn, localId, registered: true });
+      });
+
+      test('should return 200 with parse body', async () => {
+        await request(server).post('/signIn').send(valid_user).then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body).toStrictEqual({ idToken, email: user_email, refreshToken, expiresIn, userId: localId, registered: true });
+        });
+      });
+    });
+
+    describe('sign in user failure', () => {
+
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+        .post('/accounts:signInWithPassword?key=test', { ...invalid_user, returnSecureToken: true })
+        .reply(400, { error: { message: 'INVALID_PASSWORD' } });
+      });
+
+      test('should return 400', async () => {
+        await request(server).post('/signIn').send(invalid_user).then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"INVALID_PASSWORD"});
+        })
+      });
+
+      test('should validate body', async () => {
+        await request(server).post('/signup').then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"Missing value"});
+        });
+      });
+    });
+  });
 });
