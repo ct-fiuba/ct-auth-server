@@ -3,7 +3,7 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.signUp(userInfo);
   };
 
-  const signIn = async (credentials) => {
+  const signIn = (credentials) => {
     return firebaseGateway.signIn(credentials);
   };
 
