@@ -11,7 +11,6 @@ module.exports = function bodyValidatorMiddleware() {
       let firstError = errors.array()[0];
       return res.status(400).json({ reason: firstError.msg });
     }
-
     next();
   }
 

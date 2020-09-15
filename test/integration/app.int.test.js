@@ -11,6 +11,7 @@ let refreshToken = 'aRefreshToken';
 let expiresIn = 5000;
 let localId = 'aLocalId';
 
+let invalid_email = 'invalidemail';
 let invalid_password = 'incorrect_password';
 
 
@@ -35,6 +36,11 @@ describe('App test', () => {
       password
     };
 
+    const invalid_user = {
+      email: invalid_email,
+      password
+    };
+
     describe('create user success', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
@@ -54,12 +60,12 @@ describe('App test', () => {
 
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
+        .post('/accounts:signUp?key=test', { ...invalid_user, returnSecureToken: true })
         .reply(400, { error: { message: 'INVALID_EMAIL' } });
       });
 
       test('should return 400', async () => {
-        await request(server).post('/signUp').send(user).then(res => {
+        await request(server).post('/signUp').send(invalid_user).then(res => {
           expect(res.status).toBe(400);
           expect(res.body).toStrictEqual({reason:"INVALID_EMAIL"});
         })
@@ -74,7 +80,7 @@ describe('App test', () => {
     });
   });
 
-  describe('signUp', () => {
+  describe('signIn', () => {
     const valid_user = {
       email: user_email,
       password
@@ -89,13 +95,13 @@ describe('App test', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
         .post('/accounts:signInWithPassword?key=test', { ...valid_user, returnSecureToken: true })
-        .reply(200, { idToken, email: user_email, refreshToken, expiresIn, localId, registered: true });
+        .reply(200, { idToken, email: user_email, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/signIn').send(valid_user).then(res => {
           expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ idToken, email: user_email, refreshToken, expiresIn, userId: localId, registered: true });
+          expect(res.body).toStrictEqual({ idToken, email: user_email, refreshToken, expiresIn, userId: localId });
         });
       });
     });

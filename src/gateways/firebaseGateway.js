@@ -22,8 +22,8 @@ module.exports = function firebaseGateway() {
   const signIn = async credentials => {
     try {
       let firebaseResponse = await firebaseAPI.post(`accounts:signInWithPassword?key=${process.env.FIREBASE_API_KEY}`, { json: { ...credentials, returnSecureToken: true } });
-      const { idToken, email, refreshToken, expiresIn, localId, registered } = JSON.parse(firebaseResponse.body);
-      return { idToken, email, refreshToken, expiresIn, userId: localId, registered };
+      const { idToken, email, refreshToken, expiresIn, localId } = JSON.parse(firebaseResponse.body);
+      return { idToken, email, refreshToken, expiresIn, userId: localId };
     } catch (error) {
       const status = error.response.statusCode;
       const message = JSON.parse(error.response.body).error.message;
