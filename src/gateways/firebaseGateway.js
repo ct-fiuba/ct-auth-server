@@ -7,8 +7,8 @@ module.exports = function firebaseGateway() {
     prefixUrl: 'https://identitytoolkit.googleapis.com/v1'
   });
 
-  const requestAuthFirebase = (endpoint, data) => {
-    return firebaseAPI.post(`accounts:${endpoint}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
+  const requestAuthFirebase = (action, data) => {
+    return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
       .then(firebaseResponse => {
         const { idToken, email, refreshToken, expiresIn, localId } = JSON.parse(firebaseResponse.body);
         return { idToken, email, refreshToken, expiresIn, userId: localId };
