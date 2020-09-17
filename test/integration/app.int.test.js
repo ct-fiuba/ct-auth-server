@@ -50,7 +50,7 @@ describe('App test', () => {
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/signUp').send(user).then(res => {
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(201);
           expect(res.body).toStrictEqual({ idToken, email: user_email, refreshToken, expiresIn, userId: localId });
         });
       });
