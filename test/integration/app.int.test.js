@@ -14,6 +14,11 @@ let localId = 'aLocalId';
 let invalid_email = 'invalidemail';
 let invalid_password = 'incorrect_password';
 
+let valid_refresh_token = 'valid_refresh_token';
+let invalid_refresh_token = 'invalid_refresh_token';
+
+let newIdToken = 'newIdToken';
+let userId = 1;
 
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
@@ -50,7 +55,7 @@ describe('App test', () => {
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/signUp').send(user).then(res => {
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(201);
           expect(res.body).toStrictEqual({ idToken, email: user_email, refreshToken, expiresIn, userId: localId });
         });
       });
@@ -123,6 +128,47 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server).post('/signup').then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"Missing value"});
+        });
+      });
+    });
+  });
+
+  describe('refreshToken', () => {
+
+    describe('change idToken success', () => {
+      beforeEach(() => {
+        nock('https://securetoken.googleapis.com/v1')
+        .post('/token?key=test', { refresh_token: valid_refresh_token, grant_type: 'refresh_token' })
+        .reply(200, { id_token: newIdToken, expires_in: expiresIn, user_id: userId });
+      });
+
+      test('should return 200 with parse body', async () => {
+        await request(server).post('/refreshToken').send({ refreshToken: valid_refresh_token }).then(res => {
+          expect(res.status).toBe(200);
+          expect(res.body).toStrictEqual({ idToken: newIdToken, expiresIn, userId });
+        });
+      });
+    });
+
+    describe('change idToken failure', () => {
+
+      beforeEach(() => {
+        nock('https://securetoken.googleapis.com/v1')
+        .post('/token?key=test', { refresh_token: invalid_refresh_token, grant_type: 'refresh_token' })
+        .reply(400, { error: { message: 'INVALID_REFRESH_TOKEN' } });
+      });
+
+      test('should return 400', async () => {
+        await request(server).post('/refreshToken').send({ refreshToken: invalid_refresh_token }).then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"INVALID_REFRESH_TOKEN"});
+        })
+      });
+
+      test('should validate body', async () => {
+        await request(server).post('/refreshToken').then(res => {
           expect(res.status).toBe(400);
           expect(res.body).toStrictEqual({reason:"Missing value"});
         });

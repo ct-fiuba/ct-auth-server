@@ -1,24 +1,25 @@
 module.exports = function authController(authService) {
   const signUp = (req, res, next) => {
     authService.signUp(req.body)
-    .then(response => res.json(response))
-    .catch(error => {
-      res.statusCode = error.status;
-      res.json({ reason: error.message });
-    })
+    .then(response => res.status(201).json(response))
+    .catch(error => next(error));
   };
 
   const signIn = async (req, res, next) => {
     authService.signIn(req.body)
     .then(response => res.json(response))
-    .catch(error => {
-      res.statusCode = error.status;
-      res.json({ reason: error.message });
-    });
+    .catch(error => next(error));
+  }
+
+  const refreshToken = async (req, res, next) => {
+    authService.refreshToken(req.body)
+    .then(response => res.json(response))
+    .catch(error => next(error));
   }
 
   return {
     signUp,
-    signIn
+    signIn,
+    refreshToken
   };
 };

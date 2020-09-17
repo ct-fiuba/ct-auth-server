@@ -7,8 +7,13 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.signIn(credentials);
   };
 
+  const refreshToken = (token) => {
+    return firebaseGateway.refreshToken(token);
+  };
+
   return {
     signUp,
-    signIn
+    signIn,
+    refreshToken
   };
 };
