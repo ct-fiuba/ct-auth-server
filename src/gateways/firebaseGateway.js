@@ -28,8 +28,27 @@ module.exports = function firebaseGateway() {
     return requestAuthFirebase('signInWithPassword', credentials);
   };
 
+  const refreshToken  = async ({ refreshToken }) => {
+    return got.post(`https://securetoken.googleapis.com/v1/token?key=${process.env.FIREBASE_API_KEY}`, {
+        json: {
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken
+        }
+    })
+      .then(firebaseResponse => {
+        const { id_token, expires_in, user_id } = JSON.parse(firebaseResponse.body);
+        return { idToken: id_token, expiresIn: expires_in, userId: user_id };
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  };
+
   return {
     signUp,
-    signIn
+    signIn,
+    refreshToken
   };
 };

@@ -11,8 +11,15 @@ module.exports = function authController(authService) {
     .catch(error => next(error));
   }
 
+  const refreshToken = async (req, res, next) => {
+    authService.refreshToken(req.body)
+    .then(response => res.json(response))
+    .catch(error => next(error));
+  }
+
   return {
     signUp,
-    signIn
+    signIn,
+    refreshToken
   };
 };

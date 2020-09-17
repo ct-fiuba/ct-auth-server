@@ -5,6 +5,10 @@ module.exports = function bodyValidatorMiddleware() {
     body(['email', 'password'], 'Missing value').exists(),
   ];
 
+  const refreshTokenValidations = [
+    body(['refreshToken'], 'Missing value').exists(),
+  ];
+
   const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -16,6 +20,7 @@ module.exports = function bodyValidatorMiddleware() {
 
   return {
     authValidations,
-    validate
+    validate,
+    refreshTokenValidations
   };
 }; 
