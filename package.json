@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node setup.js && node main.js",
-    "start-development": "./node_modules/.bin/env-cmd -f .env.development node setup.js && node main.js",
-    "test:integration": "./node_modules/.bin/env-cmd -f .env.test node setup.js && jest int"
+    "start-development": "node setup.js && ./node_modules/.bin/env-cmd -f .env.development node main.js",
+    "test:integration": "node setup.js && ./node_modules/.bin/env-cmd -f .env.test jest int"
   },
   "author": "",
   "license": "ISC",
