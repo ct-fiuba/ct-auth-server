@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js",
-    "start-development": "./node_modules/.bin/env-cmd -f .env.development node main.js",
-    "test:integration": "./node_modules/.bin/env-cmd -f .env.test jest int"
+    "start": "node setup.js && node main.js",
+    "start-development": "./node_modules/.bin/env-cmd -f .env.development node setup.js && node main.js",
+    "test:integration": "./node_modules/.bin/env-cmd -f .env.test node setup.js && jest int"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "env-cmd": "^10.1.0",
     "express": "^4.16.4",
     "express-validator": "^6.6.0",
+    "firebase-admin": "^9.2.0",
     "got": "^11.5.1",
     "swagger-ui-express": "^4.1.4"
   },

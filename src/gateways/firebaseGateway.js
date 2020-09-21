@@ -7,6 +7,8 @@ module.exports = function firebaseGateway() {
     prefixUrl: 'https://identitytoolkit.googleapis.com/v1'
   });
 
+  var firebase_auth = require('./firebase-auth')();
+
   const requestAuthFirebase = (action, data) => {
     return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
       .then(firebaseResponse => {
@@ -46,9 +48,20 @@ module.exports = function firebaseGateway() {
       });
   };
 
+  const deleteUser = async ({ userId }) => {
+    return firebase_auth.deleteUser(userId)
+      .then(function() {
+        return {'statusCode': 200, 'message': 'Successfully deleted user'};
+      })
+      .catch(function(error) {
+        throw new RequestError(error, 400);
+      });
+  };
+
   return {
     signUp,
     signIn,
-    refreshToken
+    refreshToken,
+    deleteUser
   };
 };
