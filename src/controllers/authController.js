@@ -19,7 +19,7 @@ module.exports = function authController(authService) {
 
   const deleteUser = async (req, res, next) => {
     authService.deleteUser(req.body)
-    .then(response => res.json(response))
+    .then(response => res.status(204).end())
     .catch(error => next(error));
   }
 

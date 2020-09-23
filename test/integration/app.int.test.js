@@ -189,10 +189,9 @@ describe('App test', () => {
         .reply(200, { "statusCode": 200, "message": "Successfully deleted user" });
       });
 
-      test('should return 200 with parse body', async () => {
+      test('should return 204 with parse body', async () => {
         await request(server).post('/deleteUser').send({userId: userIdSuccess}).then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ "statusCode": 200, "message": "Successfully deleted user" });
+          expect(res.status).toBe(204);
         });
       });
     });

@@ -50,9 +50,7 @@ module.exports = function firebaseGateway() {
 
   const deleteUser = async ({ userId }) => {
     return firebase_auth.deleteUser(userId)
-      .then(function() {
-        return {'statusCode': 200, 'message': 'Successfully deleted user'};
-      })
+      .then(() => userId)
       .catch(function(error) {
         throw new RequestError(error, 400);
       });
