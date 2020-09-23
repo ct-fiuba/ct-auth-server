@@ -17,9 +17,16 @@ module.exports = function authController(authService) {
     .catch(error => next(error));
   }
 
+  const deleteUser = async (req, res, next) => {
+    authService.deleteUser(req.body)
+    .then(response => res.status(204).end())
+    .catch(error => next(error));
+  }
+
   return {
     signUp,
     signIn,
-    refreshToken
+    refreshToken,
+    deleteUser
   };
 };

@@ -175,4 +175,47 @@ describe('App test', () => {
       });
     });
   });
+
+  describe('deleteUser', () => {
+    userIdSuccess = 'Cv5weDTWgMhYoAWy95v8d8LWF7s1';
+    userIdFailure = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+    apiRequest = "https://identitytoolkit.googleapis.com/v1/projects/ct-fiuba/accounts:delete";
+
+
+    describe('delete user success', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+        .post('/projects/ct-fiuba/accounts:delete', { localId: userIdSuccess })
+        .reply(200, { "statusCode": 200, "message": "Successfully deleted user" });
+      });
+
+      test('should return 204 with parse body', async () => {
+        await request(server).post('/deleteUser').send({userId: userIdSuccess}).then(res => {
+          expect(res.status).toBe(204);
+        });
+      });
+    });
+
+    describe('delete user failure', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+        .post('/projects/ct-fiuba/accounts:delete', { localId: userIdFailure })
+        .reply(400, { "error": { "message": "There is no user record corresponding to the provided identifier." }});
+      });
+
+
+      test('should return 400', async () => {
+        await request(server).post('/deleteUser').send({userId: userIdFailure}).then(res => {
+          expect(res.status).toBe(400);
+        })
+      });
+
+      test('should validate body', async () => {
+        await request(server).post('/deleteUser').then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"Missing value"});
+        });
+      });
+    });
+  });
 });

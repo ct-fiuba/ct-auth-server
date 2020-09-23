@@ -11,9 +11,14 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.refreshToken(token);
   };
 
+  const deleteUser = (userId) => {
+    return firebaseGateway.deleteUser(userId);
+  };
+
   return {
     signUp,
     signIn,
-    refreshToken
+    refreshToken,
+    deleteUser
   };
 };

@@ -2,3 +2,5 @@
 *.DS_Store
 *coverage
 .env
+.env.test
+service-account.json
