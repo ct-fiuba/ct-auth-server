@@ -1,4 +1,3 @@
-
 const admin = require('firebase-admin');
 
 //secret ask tomi
