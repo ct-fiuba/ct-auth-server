@@ -1,13 +1,19 @@
+const { RequestError } = require('../errors/requestError');
+
 module.exports = function authService(firebaseGateway) {
-  const signUp = (userInfo) => {
+  const signUp = userInfo => {
     return firebaseGateway.signUp(userInfo);
   };
 
-  const signIn = (credentials) => {
+  const signIn = credentials => {
     return firebaseGateway.signIn(credentials);
   };
 
-  const refreshToken = (token) => {
+  const validateToken = token => {
+  return firebaseGateway.validateToken(token);
+  };
+
+  const refreshToken = token => {
     return firebaseGateway.refreshToken(token);
   };
 
@@ -18,6 +24,7 @@ module.exports = function authService(firebaseGateway) {
   return {
     signUp,
     signIn,
+    validateToken,
     refreshToken,
     deleteUser
   };

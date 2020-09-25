@@ -12,8 +12,7 @@ module.exports = function firebaseGateway() {
   const requestAuthFirebase = (action, data) => {
     return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
       .then(firebaseResponse => {
-        const { idToken, email, refreshToken, expiresIn, localId } = JSON.parse(firebaseResponse.body);
-        return { idToken, email, refreshToken, expiresIn, userId: localId };
+        return JSON.parse(firebaseResponse.body);
       })
       .catch(error => {
         const status = error.response.statusCode;
@@ -23,11 +22,18 @@ module.exports = function firebaseGateway() {
   }
 
   const signUp = async userInfo => {
-    return requestAuthFirebase('signUp', userInfo);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', userInfo);
+    return { idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
   const signIn = async credentials => {
-    return requestAuthFirebase('signInWithPassword', credentials);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', credentials);
+    return { idToken, email, refreshToken, expiresIn, userId: localId };
+  };
+
+  const validateToken = async ({token}) => {
+    const { localId, email } = await requestAuthFirebase('lookup', {idToken: token});
+    return { userId: localId, email };
   };
 
   const refreshToken  = async ({ refreshToken }) => {
@@ -59,6 +65,7 @@ module.exports = function firebaseGateway() {
   return {
     signUp,
     signIn,
+    validateToken,
     refreshToken,
     deleteUser
   };

@@ -11,9 +11,11 @@ module.exports = function authRouter() {
   return express.Router().use(
     '/',
     express.Router()
-      .post('/signUp', bodyValidator.authValidations, bodyValidator.validate, authController.signUp, errorHandler.handle)
-      .post('/signIn', bodyValidator.authValidations, bodyValidator.validate, authController.signIn, errorHandler.handle)
-      .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken, errorHandler.handle)
-      .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser, errorHandler.handle)
+      .post('/signUp', bodyValidator.authValidations, bodyValidator.validate, authController.signUp)
+      .post('/signIn', bodyValidator.authValidations, bodyValidator.validate, authController.signIn)
+      .post('/validateToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.validateToken)
+      .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken)
+      .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser)
+      .use(errorHandler.handle)
   );
 };

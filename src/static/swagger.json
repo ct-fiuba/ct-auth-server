@@ -105,6 +105,51 @@
         }
       }
     },
+    "/validateToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate user ID token",
+        "operationId": "validateToken",
+        "requestBody": {
+          "description": "Validate token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/validateTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/validTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad formatted or invalid token"
+          }
+        }
+      }
+    },
     "/refreshToken": {
       "post": {
         "tags": [
@@ -304,6 +349,28 @@
           "userId": {
             "type": "string",
             "example": "tRcfmLH7n6082nlDF"
+          }
+        }
+      },
+      "validateTokenRequest": {
+        "type": "object",
+        "properties": {
+          "idToken": {
+            "type": "string",
+            "example": "asdf1234ghty"
+          }
+        }
+      },
+      "validTokenResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
           }
         }
       },
