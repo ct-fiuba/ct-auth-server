@@ -1,4 +1,4 @@
-module.exports = function authService(firebaseGateway) {
+module.exports = function authService(firebaseGateway, genuxTokenHandler = null) {
   const signUp = (userInfo) => {
     return firebaseGateway.signUp(userInfo);
   };
@@ -15,10 +15,20 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.deleteUser(userId);
   };
 
+  const generateGenuxToken = async () => {
+    return genuxTokenHandler.createGenuxToken();
+  };
+
+  const useGenuxToken = async (token) => {
+    return genuxTokenHandler.useGenuxToken(token);
+  };
+
   return {
     signUp,
     signIn,
     refreshToken,
-    deleteUser
+    deleteUser,
+    generateGenuxToken,
+    useGenuxToken
   };
 };

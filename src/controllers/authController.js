@@ -19,7 +19,19 @@ module.exports = function authController(authService) {
 
   const deleteUser = async (req, res, next) => {
     authService.deleteUser(req.body)
-    .then(response => res.status(204).end())
+    .then(() => res.status(204).end())
+    .catch(error => next(error));
+  }
+
+  const generateGenuxToken = async (req, res, next) => {
+    authService.generateGenuxToken()
+    .then(response => res.status(201).json(response))
+    .catch(error => next(error));
+  }
+
+  const useGenuxToken = async (req, res, next) => {
+    authService.useGenuxToken(req.body.genuxToken)
+    .then(() => res.status(204).end())
     .catch(error => next(error));
   }
 
@@ -27,6 +39,8 @@ module.exports = function authController(authService) {
     signUp,
     signIn,
     refreshToken,
-    deleteUser
+    deleteUser,
+    generateGenuxToken,
+    useGenuxToken
   };
 };
