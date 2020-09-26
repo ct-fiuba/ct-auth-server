@@ -13,7 +13,11 @@ module.exports = function bodyValidatorMiddleware() {
     body(['userId'], 'Missing value').exists(),
   ];
 
-  const genuxTokenValidations = [
+  const generateGenuxTokenValidations = [
+    body(['idToken'], 'Missing value').exists(),
+  ];
+
+  const useGenuxTokenValidations = [
     body(['genuxToken'], 'Missing value').exists(),
   ];
 
@@ -31,6 +35,7 @@ module.exports = function bodyValidatorMiddleware() {
     validate,
     refreshTokenValidations,
     deleteUserValidations,
-    genuxTokenValidations
+    useGenuxTokenValidations,
+    generateGenuxTokenValidations
   };
 };

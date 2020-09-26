@@ -16,7 +16,7 @@ module.exports = function authRouter() {
       .post('/signIn', bodyValidator.authValidations, bodyValidator.validate, authController.signIn, errorHandler.handle)
       .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken, errorHandler.handle)
       .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser, errorHandler.handle)
-      .post('/generateGenuxToken', authController.generateGenuxToken, errorHandler.handle)
-      .post('/useGenuxToken', bodyValidator.genuxTokenValidations, bodyValidator.validate, authController.useGenuxToken, errorHandler.handle)
+      .post('/generateGenuxToken', bodyValidator.generateGenuxTokenValidations, bodyValidator.validate, authController.generateGenuxToken, errorHandler.handle)
+      .post('/useGenuxToken', bodyValidator.useGenuxTokenValidations, bodyValidator.validate, authController.useGenuxToken, errorHandler.handle)
   );
 };

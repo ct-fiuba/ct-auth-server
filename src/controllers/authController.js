@@ -24,7 +24,7 @@ module.exports = function authController(authService) {
   }
 
   const generateGenuxToken = async (req, res, next) => {
-    authService.generateGenuxToken()
+    authService.generateGenuxToken(req.body.idToken)
     .then(response => res.status(201).json(response))
     .catch(error => next(error));
   }

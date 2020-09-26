@@ -1,6 +1,9 @@
 const app = require('../../src/app')();
 const request = require('supertest');
 const nock = require('nock');
+const mongoose = require('mongoose');
+const mongoURL = 'mongodb://localhost:27017/test_db';
+mongoose.connect(mongoURL);
 
 let server;
 let user_email = 'email@test.com';
@@ -212,6 +215,53 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server).post('/deleteUser').then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"Missing value"});
+        });
+      });
+    });
+  });
+
+  describe('generateGenuxToken', () => {
+    describe('success', () => {
+      test('should return 201 with genuxToken', async () => {
+        await request(server).post('/generateGenuxToken').send({ idToken }).then(res => {
+          expect(res.status).toBe(201);
+        });
+      });
+    });
+
+    describe('failure', () => {
+      test('should validate body', async () => {
+        await request(server).post('/generateGenuxToken').then(res => {
+          expect(res.status).toBe(400);
+          expect(res.body).toStrictEqual({reason:"Missing value"});
+        });
+      });
+    });
+  });
+
+  describe('useGenuxToken', () => {
+    describe('success', () => {
+      test('should return 204 when valid genux token', async () => {
+        await request(server).post('/generateGenuxToken').send({ idToken }).then(async (res) => {
+          await request(server).post('/useGenuxToken').send({ genuxToken: res.body.genuxToken }).then(res => {
+            expect(res.status).toBe(204);
+          });
+        });
+      });
+    });
+
+    describe('failure', () => {
+
+      test('should return 403 when invalid genux token', async () => {
+        await request(server).post('/useGenuxToken').send({ genuxToken: 'invalidGenuxToken' }).then(res => {
+          expect(res.status).toBe(403);
+        });
+      });
+
+      test('should validate body', async () => {
+        await request(server).post('/useGenuxToken').then(res => {
           expect(res.status).toBe(400);
           expect(res.body).toStrictEqual({reason:"Missing value"});
         });
