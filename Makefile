@@ -13,9 +13,6 @@ test:
 	docker run --rm -d -p 27017:27017 --name="$(TEST_CONTAINER_NAME)" mongo:3.6.4;
 	(npm run test:integration test && docker stop $(TEST_CONTAINER_NAME)) || docker stop $(TEST_CONTAINER_NAME);
 
-.PHONY: ping
-ping:
-	curl -vvv "localhost:5005/ping"
 
 .PHONY: help
 help:
