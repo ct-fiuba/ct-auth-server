@@ -105,15 +105,15 @@
         }
       }
     },
-    "/validateToken": {
+    "/validateAccessToken": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
         "summary": "Validate user ID token",
-        "operationId": "validateToken",
+        "operationId": "validateAccessToken",
         "requestBody": {
-          "description": "Validate token",
+          "description": "Validate Access token",
           "required": true,
           "content": {
             "application/json": {
@@ -121,7 +121,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/validateTokenRequest"
+                    "$ref": "#/components/schemas/validateAccessTokenRequest"
                   }
                 ]
               }
@@ -137,7 +137,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/validTokenResponse"
+                      "$ref": "#/components/schemas/validAccessTokenResponse"
                     }
                   ]
                 }
@@ -292,7 +292,7 @@
       "signUpResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -330,7 +330,7 @@
       "signInResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -352,16 +352,16 @@
           }
         }
       },
-      "validateTokenRequest": {
+      "validateAccessTokenRequest": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "asdf1234ghty"
           }
         }
       },
-      "validTokenResponse": {
+      "validAccessTokenResponse": {
         "type": "object",
         "properties": {
           "userId": {
@@ -386,7 +386,7 @@
       "refreshTokenResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -403,7 +403,7 @@
       "generateGenuxTokenRequest": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           }

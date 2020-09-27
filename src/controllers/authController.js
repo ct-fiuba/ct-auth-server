@@ -11,8 +11,8 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
-  const validateToken = async (req, res, next) => {
-    authService.validateToken(req.body)
+  const validateAccessToken = async (req, res, next) => {
+    authService.validateAccessToken(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
@@ -32,7 +32,7 @@ module.exports = function authController(authService) {
   return {
     signUp,
     signIn,
-    validateToken,
+    validateAccessToken,
     refreshToken,
     deleteUser
   };

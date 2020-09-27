@@ -9,8 +9,8 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.signIn(credentials);
   };
 
-  const validateToken = token => {
-  return firebaseGateway.validateToken(token);
+  const validateAccessToken = token => {
+  return firebaseGateway.validateIdToken(token);
   };
 
   const refreshToken = token => {
@@ -24,7 +24,7 @@ module.exports = function authService(firebaseGateway) {
   return {
     signUp,
     signIn,
-    validateToken,
+    validateAccessToken,
     refreshToken,
     deleteUser
   };

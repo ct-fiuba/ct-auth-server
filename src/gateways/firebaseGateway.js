@@ -28,7 +28,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return { idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const validateToken = async ({idToken}) => {
+  const validateIdToken = async ({idToken}) => {
     return firebaseAuth.verifyIdToken(idToken, true)
       .then(decodedToken => decodedToken.uid)
       .catch(error => {
@@ -65,7 +65,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   return {
     signUp,
     signIn,
-    validateToken,
+    validateIdToken,
     refreshToken,
     deleteUser
   };
