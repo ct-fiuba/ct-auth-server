@@ -3,9 +3,7 @@ const express = require('express');
 const bodyValidator = require('../middlewares/bodyValidatorMiddleware')();
 const errorHandler = require('../middlewares/errorHandlerMiddleware')();
 
-const FirebaseAuth = process.env.TESTING ? 
-  () => { return {} }  : 
-  require('../gateways/firebase-auth');
+const FirebaseAuth = require('../gateways/firebase-auth');
 
 const authService = require('../services/authService');
 const firebaseGateway = require('../gateways/firebaseGateway')(FirebaseAuth());
