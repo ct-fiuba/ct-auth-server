@@ -1,32 +1,37 @@
 module.exports = function authService(firebaseGateway, genuxTokenHandler = null) {
-  const signUp = (userInfo) => {
+  const signUp = userInfo => {
     return firebaseGateway.signUp(userInfo);
   };
 
-  const signIn = (credentials) => {
+  const signIn = credentials => {
     return firebaseGateway.signIn(credentials);
   };
 
-  const refreshToken = (token) => {
+  const validateAccessToken = ({ accessToken }) => {
+    return firebaseGateway.validateIdToken(accessToken);
+  };
+
+  const refreshToken = token => {
     return firebaseGateway.refreshToken(token);
   };
 
-  const deleteUser = (userId) => {
+  const deleteUser = userId => {
     return firebaseGateway.deleteUser(userId);
   };
 
-  const generateGenuxToken = async (idToken) => {
+  const generateGenuxToken = async accessToken => {
     // TODO: validate idToken
     return genuxTokenHandler.createGenuxToken();
   };
 
-  const useGenuxToken = async (token) => {
+  const useGenuxToken = async token => {
     return genuxTokenHandler.useGenuxToken(token);
   };
 
   return {
     signUp,
     signIn,
+    validateAccessToken,
     refreshToken,
     deleteUser,
     generateGenuxToken,

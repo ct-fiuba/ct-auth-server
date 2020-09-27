@@ -15,6 +15,7 @@ before_script:
   - docker run --rm -d -p 27017:27017 --name="test" mongo:3.6.4
 
 script:
+  - npm run test:unit
   - npm run test:integration
 
 after_script:

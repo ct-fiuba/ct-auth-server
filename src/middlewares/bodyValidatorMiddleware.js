@@ -1,8 +1,13 @@
-const { body , validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
+const { RequestError } = require('../errors/requestError');
 
 module.exports = function bodyValidatorMiddleware() {
   const authValidations = [
     body(['email', 'password'], 'Missing value').exists(),
+  ];
+
+  const validateTokenValidations = [
+    body(['accessToken'], 'Missing value').exists(),
   ];
 
   const refreshTokenValidations = [
@@ -13,10 +18,6 @@ module.exports = function bodyValidatorMiddleware() {
     body(['userId'], 'Missing value').exists(),
   ];
 
-  const generateGenuxTokenValidations = [
-    body(['idToken'], 'Missing value').exists(),
-  ];
-
   const useGenuxTokenValidations = [
     body(['genuxToken'], 'Missing value').exists(),
   ];
@@ -25,17 +26,17 @@ module.exports = function bodyValidatorMiddleware() {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       let firstError = errors.array()[0];
-      return res.status(400).json({ reason: firstError.msg });
+      throw new RequestError(firstError.msg, 400);
     }
     next();
   }
 
   return {
     authValidations,
-    validate,
+    validateTokenValidations,
     refreshTokenValidations,
     deleteUserValidations,
     useGenuxTokenValidations,
-    generateGenuxTokenValidations
+    validate
   };
 };

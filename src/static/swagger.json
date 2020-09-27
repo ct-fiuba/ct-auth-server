@@ -105,6 +105,51 @@
         }
       }
     },
+    "/validateAccessToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate user ID token",
+        "operationId": "validateAccessToken",
+        "requestBody": {
+          "description": "Validate Access token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/validateAccessTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/validAccessTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad formatted or invalid token"
+          }
+        }
+      }
+    },
     "/refreshToken": {
       "post": {
         "tags": [
@@ -247,7 +292,7 @@
       "signUpResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -285,7 +330,7 @@
       "signInResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -307,6 +352,28 @@
           }
         }
       },
+      "validateAccessTokenRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "asdf1234ghty"
+          }
+        }
+      },
+      "validAccessTokenResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
       "refreshTokenRequest": {
         "type": "object",
         "properties": {
@@ -319,7 +386,7 @@
       "refreshTokenResponse": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           },
@@ -336,7 +403,7 @@
       "generateGenuxTokenRequest": {
         "type": "object",
         "properties": {
-          "idToken": {
+          "accessToken": {
             "type": "string",
             "example": "qoiu21noi75081jnln"
           }
