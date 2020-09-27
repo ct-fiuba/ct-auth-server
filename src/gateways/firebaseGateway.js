@@ -1,13 +1,10 @@
 const got = require('got');
 const { RequestError } = require('../errors/requestError');
 
-module.exports = function firebaseGateway() {
-
+module.exports = function firebaseGateway(firebaseAuth) {
   const firebaseAPI = got.extend({
     prefixUrl: 'https://identitytoolkit.googleapis.com/v1'
   });
-
-  var firebase_auth = require('./firebase-auth')();
 
   const requestAuthFirebase = (action, data) => {
     return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
@@ -31,9 +28,12 @@ module.exports = function firebaseGateway() {
     return { idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const validateToken = async ({token}) => {
-    const { localId, email } = await requestAuthFirebase('lookup', {idToken: token});
-    return { userId: localId, email };
+  const validateToken = async ({idToken}) => {
+    return firebaseAuth.verifyIdToken(idToken, true)
+      .then(decodedToken => decodedToken.uid)
+      .catch(error => {
+        throw new RequestError(error.message, 401);
+      });
   };
 
   const refreshToken  = async ({ refreshToken }) => {
@@ -55,10 +55,10 @@ module.exports = function firebaseGateway() {
   };
 
   const deleteUser = async ({ userId }) => {
-    return firebase_auth.deleteUser(userId)
+    return firebaseAuth.deleteUser(userId)
       .then(() => userId)
       .catch(function(error) {
-        throw new RequestError(error, 400);
+        throw new RequestError(error.message, 400);
       });
   };
 

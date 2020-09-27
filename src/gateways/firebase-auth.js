@@ -1,11 +1,10 @@
 const admin = require('firebase-admin');
 
-//secret ask tomi
-const serviceAccount = require(process.env.GOOGLE_SERVICE_FILE);
-
 module.exports = function auth() {
+  const creds = JSON.parse(process.env.GOOGLE_SERVICE_CREDS);
+
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(creds)
   });
 
   return admin.auth();

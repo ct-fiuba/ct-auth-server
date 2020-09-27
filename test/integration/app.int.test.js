@@ -19,6 +19,7 @@ let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
 let invalidIdToken = 'invalid_id_token';
 
+
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
 });
@@ -133,7 +134,6 @@ describe('App test', () => {
   });
 
   describe('refreshToken', () => {
-
     describe('change idToken success', () => {
       beforeEach(() => {
         nock('https://securetoken.googleapis.com/v1')
@@ -165,94 +165,6 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server).post('/refreshToken').then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"Missing value"});
-        });
-      });
-    });
-  });
-  
-  describe('validateToken', () => {
-    const validTokenBody = {
-      idToken
-    };
-
-    const invalidTokenBody = {
-      idToken: invalidIdToken
-    }
-
-    describe('idToken validation success', () => {
-      beforeEach(() => {
-        nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:lookup?key=test', { token: idToken, returnSecureToken: true })
-        .reply(200, { localId: userId, email: userEmail });
-      });
-
-      test('should return 200 with parse body', async () => {
-        await request(server).post('/validateToken').send(validTokenBody).then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ userId, email: userEmail });
-        });
-      });
-    });
-
-    describe('idToken validation failure', () => {
-      beforeEach(() => {
-        nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:lookup?key=test', { token: invalidIdToken, returnSecureToken: true })
-        .reply(400, { error: { message: 'INVALID_CUSTOM_TOKEN' } });
-      });
-
-      test('should return 400', async () => {
-        await request(server).post('/validateToken').send(invalidTokenBody).then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"INVALID_CUSTOM_TOKEN"});
-        })
-      });
-
-      test('should validate body', async () => {
-        await request(server).post('/validateToken').then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"Missing value"});
-        });
-      });
-    });
-  });
-
-  describe('deleteUser', () => {
-    userIdSuccess = 'Cv5weDTWgMhYoAWy95v8d8LWF7s1';
-    userIdFailure = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-    apiRequest = "https://identitytoolkit.googleapis.com/v1/projects/ct-fiuba/accounts:delete";
-
-    describe('delete user success', () => {
-      beforeEach(() => {
-        nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/projects/ct-fiuba/accounts:delete', { localId: userIdSuccess })
-        .reply(200, { "statusCode": 200, "message": "Successfully deleted user" });
-      });
-
-      test('should return 204 with parse body', async () => {
-        await request(server).post('/deleteUser').send({userId: userIdSuccess}).then(res => {
-          expect(res.status).toBe(204);
-        });
-      });
-    });
-
-    describe('delete user failure', () => {
-      beforeEach(() => {
-        nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/projects/ct-fiuba/accounts:delete', { localId: userIdFailure })
-        .reply(400, { "error": { "message": "There is no user record corresponding to the provided identifier." }});
-      });
-
-      test('should return 400', async () => {
-        await request(server).post('/deleteUser').send({userId: userIdFailure}).then(res => {
-          expect(res.status).toBe(400);
-        });
-      });
-
-      test('should validate body', async () => {
-        await request(server).post('/deleteUser').then(res => {
           expect(res.status).toBe(400);
           expect(res.body).toStrictEqual({reason:"Missing value"});
         });

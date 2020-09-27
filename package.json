@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node setup.js && node main.js",
     "start-development": "node setup.js && ./node_modules/.bin/env-cmd -f .env.development node main.js",
-    "test:integration": "node setup.js && ./node_modules/.bin/env-cmd -f .env.test jest int"
+    "test:integration": "TESTING=true ./node_modules/.bin/env-cmd -f .env.test jest int",
+    "test:unit": "jest unit"
   },
   "author": "",
   "license": "ISC",
