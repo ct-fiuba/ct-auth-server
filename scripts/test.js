@@ -4,10 +4,10 @@ const argv = require('minimist')(process.argv.slice(2));
 
 const env = argv._[0];
 
-const env_path = env ? `./.env.${env}` : '';
+const env_command = env ? `./node_modules/.bin/env-cmd -f  ./.env.${env}` : '';
 
 spawn(
-  `node setup.js && ./node_modules/.bin/env-cmd -f ${env_path} jest int`,
+  `node setup.js && ${env_command} jest int`,
   {
     stdio: 'inherit',
     shell: true
