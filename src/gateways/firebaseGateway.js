@@ -1,19 +1,15 @@
 const got = require('got');
 const { RequestError } = require('../errors/requestError');
 
-module.exports = function firebaseGateway() {
-
+module.exports = function firebaseGateway(firebaseAuth) {
   const firebaseAPI = got.extend({
     prefixUrl: 'https://identitytoolkit.googleapis.com/v1'
   });
 
-  var firebase_auth = require('./firebase-auth')();
-
   const requestAuthFirebase = (action, data) => {
     return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
       .then(firebaseResponse => {
-        const { idToken, email, refreshToken, expiresIn, localId } = JSON.parse(firebaseResponse.body);
-        return { idToken, email, refreshToken, expiresIn, userId: localId };
+        return JSON.parse(firebaseResponse.body);
       })
       .catch(error => {
         const status = error.response.statusCode;
@@ -23,11 +19,21 @@ module.exports = function firebaseGateway() {
   }
 
   const signUp = async userInfo => {
-    return requestAuthFirebase('signUp', userInfo);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', userInfo);
+    return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
   const signIn = async credentials => {
-    return requestAuthFirebase('signInWithPassword', credentials);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', credentials);
+    return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
+  };
+
+  const validateIdToken = async idToken => {
+    return firebaseAuth.verifyIdToken(idToken, true)
+      .then(decodedToken => decodedToken.uid)
+      .catch(error => {
+        throw new RequestError(error.message, 401);
+      });
   };
 
   const refreshToken  = async ({ refreshToken }) => {
@@ -39,7 +45,7 @@ module.exports = function firebaseGateway() {
     })
       .then(firebaseResponse => {
         const { id_token, expires_in, user_id } = JSON.parse(firebaseResponse.body);
-        return { idToken: id_token, expiresIn: expires_in, userId: user_id };
+        return { accessToken: id_token, expiresIn: expires_in, userId: user_id };
       })
       .catch(error => {
         const status = error.response.statusCode;
@@ -49,16 +55,17 @@ module.exports = function firebaseGateway() {
   };
 
   const deleteUser = async ({ userId }) => {
-    return firebase_auth.deleteUser(userId)
+    return firebaseAuth.deleteUser(userId)
       .then(() => userId)
       .catch(function(error) {
-        throw new RequestError(error, 400);
+        throw new RequestError(error.message, 400);
       });
   };
 
   return {
     signUp,
     signIn,
+    validateIdToken,
     refreshToken,
     deleteUser
   };
