@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+require('dotenv').config();
 
 //secret ask tomi
 const serviceAccount = require(`../../${process.env.GOOGLE_SERVICE_FILE}`);
