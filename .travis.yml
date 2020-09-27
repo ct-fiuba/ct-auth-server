@@ -8,9 +8,6 @@ services:
 
 sudo: required
 
-env:
-  - PORT=5005 MONGODB_URI=mongodb://ct-auth-db:27017/ct-auth-db FIREBASE_API_KEY=test GOOGLE_SERVICE_FILE=service-account.json GOOGLE_SERVICE_CREDS="{}" GENUX_TOKEN_SECONDS_EXPIRATION=60
-
 install:
   - npm install
 
