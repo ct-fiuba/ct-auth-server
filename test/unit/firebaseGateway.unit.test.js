@@ -18,13 +18,6 @@ beforeEach(() => {
 });
 
 describe('validateToken', () => {
-  const tokenBody = {
-      idToken: validIdToken,
-  };
-  const invalidTokenBody = {
-      idToken: invalidIdToken,
-  }
-
   describe('Valid ID Token', () => {
     const decodedToken = {
         uid: userId,
@@ -37,7 +30,7 @@ describe('validateToken', () => {
     });
 
     test('should respond successfully', async () => {
-      const result = await firebaseGateway.validateIdToken(tokenBody);
+      const result = await firebaseGateway.validateIdToken(validIdToken);
       expect(firebaseAuth.verifyIdToken).toHaveBeenCalledWith(validIdToken, true);
       expect(result).toBe(userId);
     });
@@ -49,7 +42,7 @@ describe('validateToken', () => {
     });
 
     test('should fail with corresponding error', async () => {
-      const result = await firebaseGateway.validateIdToken(invalidTokenBody)
+      const result = await firebaseGateway.validateIdToken(invalidIdToken)
         .then(() => fail('Call should have failed!'))
         .catch(error => { return error });
       

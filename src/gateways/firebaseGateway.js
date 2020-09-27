@@ -20,15 +20,15 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', userInfo);
-    return { idToken, email, refreshToken, expiresIn, userId: localId };
+    return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
   const signIn = async credentials => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', credentials);
-    return { idToken, email, refreshToken, expiresIn, userId: localId };
+    return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const validateIdToken = async ({idToken}) => {
+  const validateIdToken = async idToken => {
     return firebaseAuth.verifyIdToken(idToken, true)
       .then(decodedToken => decodedToken.uid)
       .catch(error => {
@@ -45,7 +45,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     })
       .then(firebaseResponse => {
         const { id_token, expires_in, user_id } = JSON.parse(firebaseResponse.body);
-        return { idToken: id_token, expiresIn: expires_in, userId: user_id };
+        return { accessToken: id_token, expiresIn: expires_in, userId: user_id };
       })
       .catch(error => {
         const status = error.response.statusCode;

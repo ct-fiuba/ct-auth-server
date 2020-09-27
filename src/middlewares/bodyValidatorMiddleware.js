@@ -7,7 +7,7 @@ module.exports = function bodyValidatorMiddleware() {
   ];
 
   const validateTokenValidations = [
-    body(['idToken'], 'Missing value').exists(),
+    body(['accessToken'], 'Missing value').exists(),
   ];
 
   const refreshTokenValidations = [

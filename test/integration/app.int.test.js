@@ -6,18 +6,18 @@ let server;
 let userEmail = 'email@test.com';
 let password = 'correct_password';
 
-let idToken = 'anIdToken';
+let accessToken = 'anIdToken';
 let refreshToken = 'aRefreshToken';
 let expiresIn = 5000;
 let localId = 'aLocalId';
 
 let userId = 1;
-let newIdToken = 'newIdToken';
+let newAccessToken = 'newIdToken';
 
 let invalidEmail = 'invalidemail';
 let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
-let invalidIdToken = 'invalid_id_token';
+let invalidAccessToken = 'invalid_id_token';
 
 
 beforeAll(async () => {
@@ -50,13 +50,13 @@ describe('App test', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
         .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
-        .reply(200, { idToken, email: userEmail, refreshToken, expiresIn, localId });
+        .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/signUp').send(user).then(res => {
           expect(res.status).toBe(201);
-          expect(res.body).toStrictEqual({ idToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+          expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
         });
       });
     });
@@ -99,13 +99,13 @@ describe('App test', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
         .post('/accounts:signInWithPassword?key=test', { ...validUser, returnSecureToken: true })
-        .reply(200, { idToken, email: userEmail, refreshToken, expiresIn, localId });
+        .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/signIn').send(validUser).then(res => {
           expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ idToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+          expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
         });
       });
     });
@@ -134,22 +134,22 @@ describe('App test', () => {
   });
 
   describe('refreshToken', () => {
-    describe('change idToken success', () => {
+    describe('change accessToken success', () => {
       beforeEach(() => {
         nock('https://securetoken.googleapis.com/v1')
         .post('/token?key=test', { refresh_token: refreshToken, grant_type: 'refresh_token' })
-        .reply(200, { id_token: newIdToken, expires_in: expiresIn, user_id: userId });
+        .reply(200, { id_token: newAccessToken, expires_in: expiresIn, user_id: userId });
       });
 
       test('should return 200 with parse body', async () => {
         await request(server).post('/refreshToken').send({ refreshToken }).then(res => {
           expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ idToken: newIdToken, expiresIn, userId });
+          expect(res.body).toStrictEqual({ accessToken: newAccessToken, expiresIn, userId });
         });
       });
     });
 
-    describe('change idToken failure', () => {
+    describe('change accessToken failure', () => {
       beforeEach(() => {
         nock('https://securetoken.googleapis.com/v1')
         .post('/token?key=test', { refresh_token: invalidRefreshToken, grant_type: 'refresh_token' })
