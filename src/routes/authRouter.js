@@ -5,8 +5,9 @@ const errorHandler = require('../middlewares/errorHandlerMiddleware')();
 
 const FirebaseAuth = require('../gateways/firebase-auth');
 const authService = require('../services/authService');
+const ValidGenuxTokenHandler = require('../models/handlers/ValidGenuxTokenHandler');
 const firebaseGateway = require('../gateways/firebaseGateway')(FirebaseAuth());
-const authController = require('../controllers/authController')(authService(firebaseGateway));
+const authController = require('../controllers/authController')(authService(firebaseGateway, ValidGenuxTokenHandler()));
 
 module.exports = function authRouter() {
   return express.Router().use(
@@ -17,6 +18,8 @@ module.exports = function authRouter() {
       .post('/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.validateAccessToken)
       .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken)
       .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser)
+      .post('/generateGenuxToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.generateGenuxToken)
+      .post('/useGenuxToken', bodyValidator.useGenuxTokenValidations, bodyValidator.validate, authController.useGenuxToken)
       .use(errorHandler.handle)
   );
 };

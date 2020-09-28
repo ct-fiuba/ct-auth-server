@@ -18,6 +18,10 @@ module.exports = function bodyValidatorMiddleware() {
     body(['userId'], 'Missing value').exists(),
   ];
 
+  const useGenuxTokenValidations = [
+    body(['genuxToken'], 'Missing value').exists(),
+  ];
+
   const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -32,6 +36,7 @@ module.exports = function bodyValidatorMiddleware() {
     validateTokenValidations,
     refreshTokenValidations,
     deleteUserValidations,
+    useGenuxTokenValidations,
     validate
   };
 };

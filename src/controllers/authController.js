@@ -29,11 +29,25 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
+  const generateGenuxToken = async (req, res, next) => {
+    authService.generateGenuxToken(req.body.accessToken)
+      .then(response => res.status(201).json(response))
+      .catch(next);
+  }
+
+  const useGenuxToken = async (req, res, next) => {
+    authService.useGenuxToken(req.body.genuxToken)
+      .then(() => res.status(204).end())
+      .catch(next);
+  }
+
   return {
     signUp,
     signIn,
     validateAccessToken,
     refreshToken,
-    deleteUser
+    deleteUser,
+    generateGenuxToken,
+    useGenuxToken
   };
 };

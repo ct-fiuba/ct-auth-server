@@ -1,6 +1,9 @@
 const app = require('../../src/app')();
 const request = require('supertest');
 const nock = require('nock');
+const mongoose = require('mongoose');
+const mongoURL = 'mongodb://localhost:27017/test_db';
+mongoose.connect(mongoURL);
 
 let server;
 let userEmail = 'email@test.com';
@@ -19,13 +22,13 @@ let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
 let invalidAccessToken = 'invalid_id_token';
 
-
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
 });
 
-afterAll((done) => {
-  server.close(done)
+afterAll(async (done) => {
+  await mongoose.connection.close();
+  await server.close(done);
 });
 
 describe('App test', () => {
@@ -49,37 +52,45 @@ describe('App test', () => {
     describe('create user success', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
-        .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
+          .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
+          .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
-        await request(server).post('/signUp').send(user).then(res => {
-          expect(res.status).toBe(201);
-          expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
-        });
+        await request(server)
+          .post('/signUp')
+          .send(user)
+          .then(res => {
+            expect(res.status).toBe(201);
+            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+          });
       });
     });
 
     describe('create user failure', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:signUp?key=test', { ...invalidUser, returnSecureToken: true })
-        .reply(400, { error: { message: 'INVALID_EMAIL' } });
+          .post('/accounts:signUp?key=test', { ...invalidUser, returnSecureToken: true })
+          .reply(400, { error: { message: 'INVALID_EMAIL' } });
       });
 
       test('should return 400', async () => {
-        await request(server).post('/signUp').send(invalidUser).then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"INVALID_EMAIL"});
-        })
+        await request(server)
+          .post('/signUp')
+          .send(invalidUser)
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'INVALID_EMAIL' });
+          });
       });
 
       test('should validate body', async () => {
-        await request(server).post('/signUp').then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"Missing value"});
-        });
+        await request(server)
+          .post('/signUp')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
       });
     });
   });
@@ -93,42 +104,50 @@ describe('App test', () => {
     const invalidUser = {
       email: userEmail,
       password: invalidPassword
-    }
+    };
 
     describe('sign in user success', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:signInWithPassword?key=test', { ...validUser, returnSecureToken: true })
-        .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
+          .post('/accounts:signInWithPassword?key=test', { ...validUser, returnSecureToken: true })
+          .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
-        await request(server).post('/signIn').send(validUser).then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
-        });
+        await request(server)
+          .post('/signIn')
+          .send(validUser)
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+          });
       });
     });
 
     describe('sign in user failure', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-        .post('/accounts:signInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
-        .reply(400, { error: { message: 'INVALID_PASSWORD' } });
+          .post('/accounts:signInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
+          .reply(400, { error: { message: 'INVALID_PASSWORD' } });
       });
 
       test('should return 400', async () => {
-        await request(server).post('/signIn').send(invalidUser).then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"INVALID_PASSWORD"});
-        })
+        await request(server)
+          .post('/signIn')
+          .send(invalidUser)
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'INVALID_PASSWORD' });
+          });
       });
 
       test('should validate body', async () => {
-        await request(server).post('/signIn').then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"Missing value"});
-        });
+        await request(server)
+          .post('/signIn')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
       });
     });
   });
@@ -137,37 +156,107 @@ describe('App test', () => {
     describe('change accessToken success', () => {
       beforeEach(() => {
         nock('https://securetoken.googleapis.com/v1')
-        .post('/token?key=test', { refresh_token: refreshToken, grant_type: 'refresh_token' })
-        .reply(200, { id_token: newAccessToken, expires_in: expiresIn, user_id: userId });
+          .post('/token?key=test', { refresh_token: refreshToken, grant_type: 'refresh_token' })
+          .reply(200, { id_token: newAccessToken, expires_in: expiresIn, user_id: userId });
       });
 
       test('should return 200 with parse body', async () => {
-        await request(server).post('/refreshToken').send({ refreshToken }).then(res => {
-          expect(res.status).toBe(200);
-          expect(res.body).toStrictEqual({ accessToken: newAccessToken, expiresIn, userId });
-        });
+        await request(server)
+          .post('/refreshToken')
+          .send({ refreshToken })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ accessToken: newAccessToken, expiresIn, userId });
+          });
       });
     });
 
     describe('change accessToken failure', () => {
       beforeEach(() => {
         nock('https://securetoken.googleapis.com/v1')
-        .post('/token?key=test', { refresh_token: invalidRefreshToken, grant_type: 'refresh_token' })
-        .reply(400, { error: { message: 'INVALID_REFRESH_TOKEN' } });
+          .post('/token?key=test', { refresh_token: invalidRefreshToken, grant_type: 'refresh_token' })
+          .reply(400, { error: { message: 'INVALID_REFRESH_TOKEN' } });
       });
 
       test('should return 400', async () => {
-        await request(server).post('/refreshToken').send({ refreshToken: invalidRefreshToken }).then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"INVALID_REFRESH_TOKEN"});
-        })
+        await request(server)
+          .post('/refreshToken')
+          .send({ refreshToken: invalidRefreshToken })
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'INVALID_REFRESH_TOKEN' });
+          });
       });
 
       test('should validate body', async () => {
-        await request(server).post('/refreshToken').then(res => {
-          expect(res.status).toBe(400);
-          expect(res.body).toStrictEqual({reason:"Missing value"});
-        });
+        await request(server)
+          .post('/refreshToken')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+    });
+  });
+
+  describe('generateGenuxToken', () => {
+    describe('success', () => {
+      test('should return 201 with genuxToken', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .send({ accessToken })
+          .then(res => {
+            expect(res.status).toBe(201);
+          });
+      });
+    });
+
+    describe('failure', () => {
+      test('should validate body', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+    });
+  });
+
+  describe('useGenuxToken', () => {
+    describe('success', () => {
+      test('should return 204 when valid genux token', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .send({ accessToken })
+          .then(async res => {
+            await request(server)
+              .post('/useGenuxToken')
+              .send({ genuxToken: res.body.genuxToken })
+              .then(res => {
+                expect(res.status).toBe(204);
+              });
+          });
+      });
+    });
+
+    describe('failure', () => {
+      test('should return 403 when invalid genux token', async () => {
+        await request(server)
+          .post('/useGenuxToken')
+          .send({ genuxToken: 'invalidGenuxToken' })
+          .then(res => {
+            expect(res.status).toBe(403);
+          });
+      });
+
+      test('should validate body', async () => {
+        await request(server)
+          .post('/useGenuxToken')
+          .then(res => {
+            expect(res.status).toBe(400);
+            expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
       });
     });
   });

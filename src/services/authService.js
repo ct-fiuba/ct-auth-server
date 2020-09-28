@@ -1,6 +1,4 @@
-const { RequestError } = require('../errors/requestError');
-
-module.exports = function authService(firebaseGateway) {
+module.exports = function authService(firebaseGateway, genuxTokenHandler = null) {
   const signUp = userInfo => {
     return firebaseGateway.signUp(userInfo);
   };
@@ -9,16 +7,25 @@ module.exports = function authService(firebaseGateway) {
     return firebaseGateway.signIn(credentials);
   };
 
-  const validateAccessToken = ({accessToken}) => {
-  return firebaseGateway.validateIdToken(accessToken);
+  const validateAccessToken = ({ accessToken }) => {
+    return firebaseGateway.validateIdToken(accessToken);
   };
 
   const refreshToken = token => {
     return firebaseGateway.refreshToken(token);
   };
 
-  const deleteUser = (userId) => {
+  const deleteUser = userId => {
     return firebaseGateway.deleteUser(userId);
+  };
+
+  const generateGenuxToken = async accessToken => {
+    // TODO: validate idToken
+    return genuxTokenHandler.createGenuxToken();
+  };
+
+  const useGenuxToken = async token => {
+    return genuxTokenHandler.useGenuxToken(token);
   };
 
   return {
@@ -26,6 +33,8 @@ module.exports = function authService(firebaseGateway) {
     signIn,
     validateAccessToken,
     refreshToken,
-    deleteUser
+    deleteUser,
+    generateGenuxToken,
+    useGenuxToken
   };
 };
