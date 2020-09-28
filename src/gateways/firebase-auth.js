@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-require('dotenv').config();
 
 module.exports = function auth() {
   if (process.env.TESTING) return {};
