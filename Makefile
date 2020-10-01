@@ -6,7 +6,7 @@ install:
 
 .PHONY: run
 run: install
-	npm start;
+	docker-compose up --build;
 
 .PHONY: test
 test:
