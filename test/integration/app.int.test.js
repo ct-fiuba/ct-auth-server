@@ -56,7 +56,7 @@ describe('App test', () => {
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
-      test('should return 200 with parse body', async () => {
+      test('should return 201 with parse body', async () => {
         await request(server)
           .post('/signUp')
           .send(user)
