@@ -1,7 +1,7 @@
 module.exports = function authController(authService) {
   const signUp = (req, res, next) => {
     authService.signUp(req.body)
-      .then(response => res.status(201).json(response))
+      .then(response => res.status(200).json(response))
       .catch(next);
   };
 
@@ -31,7 +31,7 @@ module.exports = function authController(authService) {
 
   const generateGenuxToken = async (req, res, next) => {
     authService.generateGenuxToken(req.body.accessToken)
-      .then(response => res.status(201).json(response))
+      .then(response => res.status(200).json(response))
       .catch(next);
   }
 

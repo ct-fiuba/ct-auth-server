@@ -56,12 +56,12 @@ describe('App test', () => {
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
-      test('should return 201 with parse body', async () => {
+      test('should return 200 with parse body', async () => {
         await request(server)
           .post('/signUp')
           .send(user)
           .then(res => {
-            expect(res.status).toBe(201);
+            expect(res.status).toBe(200);
             expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
           });
       });
@@ -201,12 +201,12 @@ describe('App test', () => {
 
   describe('generateGenuxToken', () => {
     describe('success', () => {
-      test('should return 201 with genuxToken', async () => {
+      test('should return 200 with genuxToken', async () => {
         await request(server)
           .post('/generateGenuxToken')
           .send({ accessToken })
           .then(res => {
-            expect(res.status).toBe(201);
+            expect(res.status).toBe(200);
           });
       });
     });
