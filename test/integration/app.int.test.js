@@ -1,6 +1,12 @@
+jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
+  return { verifyIdToken: jest.fn(() => Promise.resolve({})) }
+}));
+
 const app = require('../../src/app')();
+
 const request = require('supertest');
 const nock = require('nock');
+
 const mongoose = require('mongoose');
 const mongoURL = 'mongodb://localhost:27017/test_db';
 mongoose.connect(mongoURL);
@@ -209,6 +215,7 @@ describe('App test', () => {
             expect(res.status).toBe(201);
           });
       });
+
     });
 
     describe('failure', () => {

@@ -19,10 +19,10 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.deleteUser(userId);
   };
 
-  const generateGenuxToken = async accessToken => {
-    // TODO: validate idToken
-    return genuxTokenHandler.createGenuxToken();
-  };
+  const generateGenuxToken = async accessToken =>
+    firebaseGateway.validateIdToken(accessToken).then(() => {
+      return genuxTokenHandler.createGenuxToken();
+    });
 
   const useGenuxToken = async token => {
     return genuxTokenHandler.useGenuxToken(token);
