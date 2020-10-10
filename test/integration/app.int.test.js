@@ -1,6 +1,4 @@
-jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
-  return { verifyIdToken: jest.fn(() => Promise.resolve({})) }
-}));
+
 
 const app = require('../../src/app')();
 
@@ -27,6 +25,16 @@ let invalidEmail = 'invalidemail';
 let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
 let invalidAccessToken = 'invalid_id_token';
+
+jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
+  return { verifyIdToken: jest.fn((token) => {
+    if (token === 'anIdToken') {
+      return Promise.resolve({})
+    } else {
+      return Promise.reject(new Error("Crash!"))
+    } 
+  })}
+}));
 
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
@@ -225,6 +233,16 @@ describe('App test', () => {
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+
+      test('should return 401 when invalid accessToken', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .send({ accessToken: invalidAccessToken })
+          .then(res => {
+            expect(res.status).toBe(401);
+            expect(res.body).toStrictEqual({ reason: 'Crash!' });
           });
       });
     });
