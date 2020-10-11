@@ -62,11 +62,45 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   };
 
+  const sendPasswordResetEmail = async ({ email }) => {
+    return got.post(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${process.env.FIREBASE_API_KEY}`, {
+        json: {
+          requestType: 'PASSWORD_RESET',
+          email: email
+        }
+    })
+      .then(firebaseResponse => {
+        const { email } = JSON.parse(firebaseResponse.body);
+        return { email };
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  };
+
+  const confirmPasswordReset = async ({ passwordResetInfo }) => {
+    return got.post(`https://identitytoolkit.googleapis.com/v1/accounts:resetPassword?key=${process.env.FIREBASE_API_KEY}`, {
+        json: passwordResetInfo
+    })
+      .then(firebaseResponse => {
+        const { email, requestType } = JSON.parse(firebaseResponse.body);
+        return { email, requestType };
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  };
+
   return {
     signUp,
     signIn,
     validateIdToken,
     refreshToken,
-    deleteUser
+    deleteUser,
+    sendPasswordResetEmail
   };
 };

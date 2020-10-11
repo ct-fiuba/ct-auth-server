@@ -41,6 +41,18 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
+  const sendPasswordResetEmail = async (req, res, next) => {
+    authService.sendPasswordResetEmail(req.body.email)
+      .then(() => res.status(200).end())
+      .catch(next);
+  }
+
+  const confirmPasswordReset = async (req, res, next) => {
+    authService.confirmPasswordReset(req.body)
+      .then(() => res.status(200).end())
+      .catch(next);
+  }
+
   return {
     signUp,
     signIn,
@@ -48,6 +60,8 @@ module.exports = function authController(authService) {
     refreshToken,
     deleteUser,
     generateGenuxToken,
-    useGenuxToken
+    useGenuxToken,
+    sendPasswordResetEmail,
+    confirmPasswordReset
   };
 };

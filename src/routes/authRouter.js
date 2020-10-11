@@ -20,6 +20,8 @@ module.exports = function authRouter() {
       .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser)
       .post('/generateGenuxToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.generateGenuxToken)
       .post('/useGenuxToken', bodyValidator.useGenuxTokenValidations, bodyValidator.validate, authController.useGenuxToken)
+      .post('/sendPasswordResetEmail', bodyValidator.sendPasswordResetEmailValidations, bodyValidator.validate, authController.sendPasswordResetEmail)
+      .post('/confirmPasswordReset', bodyValidator.confirmPasswordResetValidations, bodyValidator.validate, authController.confirmPasswordReset)
       .use(errorHandler.handle)
   );
 };
