@@ -8,6 +8,7 @@ mongoose.connect(mongoURL);
 let server;
 let userEmail = 'email@test.com';
 let password = 'correct_password';
+let dni = '40402425';
 
 let accessToken = 'anIdToken';
 let refreshToken = 'aRefreshToken';
@@ -41,12 +42,14 @@ describe('App test', () => {
   describe('signUp', () => {
     const user = {
       email: userEmail,
-      password
+      password,
+      DNI: dni
     };
 
     const invalidUser = {
       email: invalidEmail,
-      password
+      password,
+      DNI: dni
     };
 
     describe('create user success', () => {
@@ -54,6 +57,10 @@ describe('App test', () => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .put('/users.json', { aLocalId: { DNI: dni } })
+          .reply(200, { aLocalId: { DNI: dni } });
       });
 
       test('should return 201 with parse body', async () => {
@@ -352,7 +359,7 @@ describe('App test', () => {
     response_example = {
       "users": [
         {
-          "localId": "ZY1rJK0...",
+          "localId": localId,
           "email": "user@example.com",
           "emailVerified": false,
           "displayName": "John Doe",
@@ -384,6 +391,12 @@ describe('App test', () => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:lookup?key=test', { idToken: accessToken })
           .reply(200, response_example);
+
+        let response = {}
+        response[localId] = {DNI: dni};
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .get(`/users.json?orderBy=%22$key%22&equalTo=${localId}`)
+          .reply(200, response);
       });
 
       test('should return 200 when sending the email to verify the account', async () => {
@@ -392,6 +405,7 @@ describe('App test', () => {
           .send({ accessToken })
           .then(res => {
             expect(res.status).toBe(200);
+            response_example['users'][0]['DNI'] = dni;
             expect(res.body).toStrictEqual(response_example);
           });
       });

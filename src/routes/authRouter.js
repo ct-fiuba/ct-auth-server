@@ -13,8 +13,8 @@ module.exports = function authRouter() {
   return express.Router().use(
     '/',
     express.Router()
-      .post('/signUp', bodyValidator.authValidations, bodyValidator.validate, authController.signUp)
-      .post('/signIn', bodyValidator.authValidations, bodyValidator.validate, authController.signIn)
+      .post('/signUp', bodyValidator.signUpValidations, bodyValidator.validate, authController.signUp)
+      .post('/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.signIn)
       .post('/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.validateAccessToken)
       .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken)
       .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser)
