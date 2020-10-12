@@ -23,6 +23,7 @@ module.exports = function authRouter() {
       .post('/sendPasswordResetEmail', bodyValidator.sendPasswordResetEmailValidations, bodyValidator.validate, authController.sendPasswordResetEmail)
       .post('/confirmPasswordReset', bodyValidator.confirmPasswordResetValidations, bodyValidator.validate, authController.confirmPasswordReset)
       .post('/changePassword', bodyValidator.changePasswordValidations, bodyValidator.validate, authController.changePassword)
+      .post('/sendEmailVerification', bodyValidator.sendEmailVerificationValidations, bodyValidator.validate, authController.sendEmailVerification)
       .use(errorHandler.handle)
   );
 };

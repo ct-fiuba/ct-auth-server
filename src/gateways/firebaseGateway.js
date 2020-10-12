@@ -77,6 +77,11 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
+  const sendEmailVerification = async idToken => {
+    const { email } = await requestAuthFirebase('sendOobCode', { idToken, requestType: "VERIFY_EMAIL" });
+    return { email };
+  };
+
   return {
     signUp,
     signIn,
@@ -85,6 +90,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     deleteUser,
     sendPasswordResetEmail,
     confirmPasswordReset,
-    changePassword
+    changePassword,
+    sendEmailVerification
   };
 };

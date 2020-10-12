@@ -327,4 +327,24 @@ describe('App test', () => {
       });
     });
   });
+
+  describe('sendEmailVerification', () => {
+    describe('sendEmailVerification', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:sendOobCode?key=test', { idToken: accessToken, requestType: "VERIFY_EMAIL" })
+          .reply(200, { email: userEmail });
+      });
+
+      test('should return 200 when sending the email to verify the account', async () => {
+        await request(server)
+          .post('/sendEmailVerification')
+          .send({ accessToken })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ email: userEmail });
+          });
+      });
+    });
+  });
 });
