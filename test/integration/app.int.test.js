@@ -316,7 +316,7 @@ describe('App test', () => {
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
-      test('should return 200 when confirming the password reset with the oobCode received', async () => {
+      test('should return 200 when changing the password', async () => {
         await request(server)
           .post('/changePassword')
           .send({ accessToken, password: newPassword })
