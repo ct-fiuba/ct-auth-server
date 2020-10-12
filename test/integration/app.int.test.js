@@ -1,5 +1,3 @@
-
-
 const app = require('../../src/app')();
 const request = require('supertest');
 const nock = require('nock');
