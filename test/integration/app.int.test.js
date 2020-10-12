@@ -260,4 +260,49 @@ describe('App test', () => {
       });
     });
   });
+
+  describe('sendResetPasswordEmail', () => {
+    userEmail = "blabla@gmail.com";
+
+    describe('send email', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:sendOobCode?key=test', { email: userEmail, requestType: 'PASSWORD_RESET' })
+          .reply(200, { email: userEmail });
+      });
+
+      test('should return 200 when sending email for resetting password', async () => {
+        await request(server)
+          .post('/sendPasswordResetEmail')
+          .send({ email: userEmail })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ email: userEmail });
+          });
+      });
+    });
+  });
+
+  describe('confirmResetPassword', () => {
+    newPassword = "NewPassword";
+    oobCode = "12345678";
+
+    describe('confirm reset password', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:resetPassword?key=test', { oobCode, newPassword })
+          .reply(200, { email: userEmail, requestType: "PASSWORD_RESET" });
+      });
+
+      test('should return 200 when confirming the password reset with the oobCode received', async () => {
+        await request(server)
+          .post('/confirmPasswordReset')
+          .send({ oobCode, newPassword })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ email: userEmail, requestType: "PASSWORD_RESET" });
+          });
+      });
+    });
+  });
 });

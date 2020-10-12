@@ -42,14 +42,14 @@ module.exports = function authController(authService) {
   }
 
   const sendPasswordResetEmail = async (req, res, next) => {
-    authService.sendPasswordResetEmail(req.body.email)
-      .then(() => res.status(200).end())
+    authService.sendPasswordResetEmail(req.body)
+      .then(response => res.json(response))
       .catch(next);
   }
 
   const confirmPasswordReset = async (req, res, next) => {
     authService.confirmPasswordReset(req.body)
-      .then(() => res.status(200).end())
+      .then(response => res.json(response))
       .catch(next);
   }
 

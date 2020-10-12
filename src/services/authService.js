@@ -28,7 +28,7 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return genuxTokenHandler.useGenuxToken(token);
   };
 
-  const sendPasswordResetEmail = email => {
+  const sendPasswordResetEmail = ({ email }) => {
     return firebaseGateway.sendPasswordResetEmail(email);
   };
 
