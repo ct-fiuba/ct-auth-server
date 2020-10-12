@@ -22,6 +22,7 @@ module.exports = function authRouter() {
       .post('/useGenuxToken', bodyValidator.useGenuxTokenValidations, bodyValidator.validate, authController.useGenuxToken)
       .post('/sendPasswordResetEmail', bodyValidator.sendPasswordResetEmailValidations, bodyValidator.validate, authController.sendPasswordResetEmail)
       .post('/confirmPasswordReset', bodyValidator.confirmPasswordResetValidations, bodyValidator.validate, authController.confirmPasswordReset)
+      .post('/changePassword', bodyValidator.changePasswordValidations, bodyValidator.validate, authController.changePassword)
       .use(errorHandler.handle)
   );
 };
