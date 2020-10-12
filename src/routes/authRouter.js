@@ -24,6 +24,7 @@ module.exports = function authRouter() {
       .post('/confirmPasswordReset', bodyValidator.confirmPasswordResetValidations, bodyValidator.validate, authController.confirmPasswordReset)
       .post('/changePassword', bodyValidator.changePasswordValidations, bodyValidator.validate, authController.changePassword)
       .post('/sendEmailVerification', bodyValidator.sendEmailVerificationValidations, bodyValidator.validate, authController.sendEmailVerification)
+      .post('/getUserData', bodyValidator.getUserDataValidations, bodyValidator.validate, authController.getUserData)
       .use(errorHandler.handle)
   );
 };

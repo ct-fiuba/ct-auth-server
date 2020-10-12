@@ -65,6 +65,12 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
+  const getUserData = async (req, res, next) => {
+    authService.getUserData(req.body.accessToken)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
   return {
     signUp,
     signIn,
@@ -76,6 +82,7 @@ module.exports = function authController(authService) {
     sendPasswordResetEmail,
     confirmPasswordReset,
     changePassword,
-    sendEmailVerification
+    sendEmailVerification,
+    getUserData
   };
 };

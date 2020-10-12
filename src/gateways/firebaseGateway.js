@@ -82,6 +82,11 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return { email };
   };
 
+  const getUserData = async idToken => {
+    const { users } = await requestAuthFirebase('lookup', { idToken });
+    return { users };
+  };
+
   return {
     signUp,
     signIn,
@@ -91,6 +96,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     sendPasswordResetEmail,
     confirmPasswordReset,
     changePassword,
-    sendEmailVerification
+    sendEmailVerification,
+    getUserData
   };
 };
