@@ -272,6 +272,96 @@
           }
         }
       }
+    },
+    "/sendPasswordResetEmail": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "send an email to reset the password",
+        "operationId": "sendPasswordResetEmail",
+        "requestBody": {
+          "description": "Send Password Reset Email",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/sendPasswordResetEmailRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/sendPasswordResetEmailResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/confirmPasswordReset": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "confirm the password reset with the oob code received by email",
+        "operationId": "confirmPasswordReset",
+        "requestBody": {
+          "description": "Confirm Password Reset",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/confirmPasswordResetRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password resetted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/confirmPasswordResetResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -361,7 +451,7 @@
           }
         }
       },
-      "validAccessTokenResponse": {
+      "validateAccessTokenResponse": {
         "type": "object",
         "properties": {
           "userId": {
@@ -428,6 +518,50 @@
           "genuxToken": {
             "type": "string",
             "example": "pomnopiu1poi5poiu1212345"
+          }
+        }
+      },
+      "sendPasswordResetEmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "sendPasswordResetEmailResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "confirmPasswordResetRequest": {
+        "type": "object",
+        "properties": {
+          "oobCode": {
+            "type": "string",
+            "example": "lkjovin1o234n5"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "securePassword"
+          }
+        }
+      },
+      "confirmPasswordResetResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "requestType": {
+            "type": "string",
+            "example": "PASSWORD_RESET"
           }
         }
       }
