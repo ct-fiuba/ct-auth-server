@@ -328,7 +328,7 @@ describe('App test', () => {
   });
 
   describe('changePassword', () => {
-    newPassword = "NewPassword";
+    const newPassword = "NewPassword";
 
     describe('change password', () => {
       beforeEach(() => {

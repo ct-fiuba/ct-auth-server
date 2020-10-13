@@ -362,6 +362,51 @@
           }
         }
       }
+    },
+    "/changePassword": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "change password of the current account while logged in",
+        "operationId": "changePassword",
+        "requestBody": {
+          "description": "Change Password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/changePasswordRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/changePasswordResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -562,6 +607,44 @@
           "requestType": {
             "type": "string",
             "example": "PASSWORD_RESET"
+          }
+        }
+      },
+      "changePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword"
+          }
+        }
+      },
+      "changePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "lkj12341injh98nv98"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
           }
         }
       }
