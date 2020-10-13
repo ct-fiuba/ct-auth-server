@@ -395,7 +395,7 @@ describe('App test', () => {
         let response = {}
         response[localId] = {DNI: dni};
         nock('https://ct-fiuba.firebaseio.com/rest')
-          .get(`/users.json?orderBy=%22$key%22&equalTo=${localId}`)
+          .get(`/users.json?orderBy=%22$key%22&equalTo="${localId}"`)
           .reply(200, response);
       });
 

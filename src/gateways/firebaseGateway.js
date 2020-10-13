@@ -37,7 +37,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const getUserDNI = (userId) => {
-    return firebaseDatabaseAPI.get(`users.json?orderBy="$key"&equalTo=${userId}`)
+    return firebaseDatabaseAPI.get(`users.json?orderBy="$key"&equalTo="${userId}"`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
