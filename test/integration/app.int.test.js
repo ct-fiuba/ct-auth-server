@@ -28,7 +28,7 @@ jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
       return Promise.resolve({})
     } else {
       return Promise.reject(new Error("Crash!"))
-    } 
+    }
   })}
 }));
 
@@ -283,7 +283,7 @@ describe('App test', () => {
   });
 
   describe('sendResetPasswordEmail', () => {
-    userEmail = "blabla@gmail.com";
+    const userEmail = "blabla@gmail.com";
 
     describe('send email', () => {
       beforeEach(() => {
@@ -305,8 +305,8 @@ describe('App test', () => {
   });
 
   describe('confirmResetPassword', () => {
-    newPassword = "NewPassword";
-    oobCode = "12345678";
+    const newPassword = "NewPassword";
+    const oobCode = "12345678";
 
     describe('confirm reset password', () => {
       beforeEach(() => {
