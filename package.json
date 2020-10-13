@@ -20,9 +20,9 @@
     "express-validator": "^6.6.0",
     "firebase-admin": "^9.2.0",
     "got": "^11.5.1",
-    "swagger-ui-express": "^4.1.4",
     "mongoose": "^5.9.26",
-    "mongoose-sequence": "^5.2.1"
+    "mongoose-sequence": "^5.2.1",
+    "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
     "jest": "^26.1.0",
