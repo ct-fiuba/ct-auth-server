@@ -6,10 +6,13 @@ services:
       context: .
       dockerfile: Dockerfile.web
     image: ct-auth-server:latest
+    env_file:
+      - .env
     environment:
       - PORT=5006
+      - MONGODB_URI=mongodb://ct-auth-db:27017/ct-auth-db
     ports:
-      - "5006:5006"
+      - "${PORT}:${PORT}"
     depends_on:
       - ct-auth-db
 

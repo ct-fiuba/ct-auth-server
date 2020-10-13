@@ -8,7 +8,6 @@ RUN npm install
 
 COPY setup.js .
 COPY main.js .
-COPY .env .
 COPY src/ src/
 
 EXPOSE 5006
