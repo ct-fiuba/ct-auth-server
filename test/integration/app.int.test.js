@@ -28,7 +28,7 @@ jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
       return Promise.resolve({})
     } else {
       return Promise.reject(new Error("Crash!"))
-    } 
+    }
   })}
 }));
 
@@ -277,6 +277,51 @@ describe('App test', () => {
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+    });
+  });
+
+  describe('sendResetPasswordEmail', () => {
+    const userEmail = "blabla@gmail.com";
+
+    describe('send email', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:sendOobCode?key=test', { email: userEmail, requestType: 'PASSWORD_RESET' })
+          .reply(200, { email: userEmail });
+      });
+
+      test('should return 200 when sending email for resetting password', async () => {
+        await request(server)
+          .post('/sendPasswordResetEmail')
+          .send({ email: userEmail })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ email: userEmail });
+          });
+      });
+    });
+  });
+
+  describe('confirmResetPassword', () => {
+    const newPassword = "NewPassword";
+    const oobCode = "12345678";
+
+    describe('confirm reset password', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:resetPassword?key=test', { oobCode, newPassword })
+          .reply(200, { email: userEmail, requestType: "PASSWORD_RESET" });
+      });
+
+      test('should return 200 when confirming the password reset with the oobCode received', async () => {
+        await request(server)
+          .post('/confirmPasswordReset')
+          .send({ oobCode, newPassword })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ email: userEmail, requestType: "PASSWORD_RESET" });
           });
       });
     });

@@ -22,6 +22,14 @@ module.exports = function bodyValidatorMiddleware() {
     body(['genuxToken'], 'Missing value').exists(),
   ];
 
+  const sendPasswordResetEmailValidations = [
+    body(['email'], 'Missing value').exists(),
+  ];
+
+  const confirmPasswordResetValidations = [
+    body(['oobCode', 'newPassword'], 'Missing value').exists(),
+  ];
+
   const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -37,6 +45,8 @@ module.exports = function bodyValidatorMiddleware() {
     refreshTokenValidations,
     deleteUserValidations,
     useGenuxTokenValidations,
+    sendPasswordResetEmailValidations,
+    confirmPasswordResetValidations,
     validate
   };
 };

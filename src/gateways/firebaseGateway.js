@@ -7,7 +7,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   });
 
   const requestAuthFirebase = (action, data) => {
-    return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: { ...data, returnSecureToken: true } })
+    return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: data })
       .then(firebaseResponse => {
         return JSON.parse(firebaseResponse.body);
       })
@@ -19,12 +19,12 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const signUp = async userInfo => {
-    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', userInfo);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
   const signIn = async credentials => {
-    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', credentials);
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', { ...credentials, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
@@ -62,11 +62,23 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   };
 
+  const sendPasswordResetEmail = async email => {
+    const res = await requestAuthFirebase('sendOobCode', { requestType: 'PASSWORD_RESET', email: email });
+    return { email: res.email };
+  };
+
+  const confirmPasswordReset = async passwordResetInfo => {
+    const { email, requestType } = await requestAuthFirebase('resetPassword', passwordResetInfo);
+    return { email, requestType };
+  };
+
   return {
     signUp,
     signIn,
     validateIdToken,
     refreshToken,
-    deleteUser
+    deleteUser,
+    sendPasswordResetEmail,
+    confirmPasswordReset
   };
 };

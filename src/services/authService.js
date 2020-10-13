@@ -28,6 +28,14 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return genuxTokenHandler.useGenuxToken(token);
   };
 
+  const sendPasswordResetEmail = ({ email }) => {
+    return firebaseGateway.sendPasswordResetEmail(email);
+  };
+
+  const confirmPasswordReset = passwordResetInfo => {
+    return firebaseGateway.confirmPasswordReset(passwordResetInfo);
+  };
+
   return {
     signUp,
     signIn,
@@ -35,6 +43,8 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     refreshToken,
     deleteUser,
     generateGenuxToken,
-    useGenuxToken
+    useGenuxToken,
+    sendPasswordResetEmail,
+    confirmPasswordReset
   };
 };
