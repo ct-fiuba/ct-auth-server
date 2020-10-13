@@ -326,4 +326,26 @@ describe('App test', () => {
       });
     });
   });
+
+  describe('changePassword', () => {
+    const newPassword = "NewPassword";
+
+    describe('change password', () => {
+      beforeEach(() => {
+        nock('https://identitytoolkit.googleapis.com/v1')
+          .post('/accounts:update?key=test', { idToken: accessToken, password: newPassword, returnSecureToken: true })
+          .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
+      });
+
+      test('should return 200 when changing the password', async () => {
+        await request(server)
+          .post('/changePassword')
+          .send({ accessToken, password: newPassword })
+          .then(res => {
+            expect(res.status).toBe(200);
+            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+          });
+      });
+    });
+  });
 });

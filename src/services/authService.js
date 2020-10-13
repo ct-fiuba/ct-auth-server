@@ -36,6 +36,10 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.confirmPasswordReset(passwordResetInfo);
   };
 
+  const changePassword = changePasswordInfo => {
+    return firebaseGateway.changePassword({ password: changePasswordInfo.password, idToken: changePasswordInfo.accessToken });
+  };
+
   return {
     signUp,
     signIn,
@@ -45,6 +49,7 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     generateGenuxToken,
     useGenuxToken,
     sendPasswordResetEmail,
-    confirmPasswordReset
+    confirmPasswordReset,
+    changePassword
   };
 };

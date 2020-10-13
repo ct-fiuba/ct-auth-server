@@ -72,6 +72,11 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return { email, requestType };
   };
 
+  const changePassword = async passwordChangeInfo => {
+    const { idToken, email, refreshToken, expiresIn, localId, passwordHash, providerUserInfo } = await requestAuthFirebase('update', { ...passwordChangeInfo, returnSecureToken: true });
+    return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
+  };
+
   return {
     signUp,
     signIn,
@@ -79,6 +84,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     refreshToken,
     deleteUser,
     sendPasswordResetEmail,
-    confirmPasswordReset
+    confirmPasswordReset,
+    changePassword
   };
 };

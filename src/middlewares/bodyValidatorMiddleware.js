@@ -30,6 +30,10 @@ module.exports = function bodyValidatorMiddleware() {
     body(['oobCode', 'newPassword'], 'Missing value').exists(),
   ];
 
+  const changePasswordValidations = [
+    body(['accessToken', 'password'], 'Missing value').exists(),
+  ];
+
   const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -47,6 +51,7 @@ module.exports = function bodyValidatorMiddleware() {
     useGenuxTokenValidations,
     sendPasswordResetEmailValidations,
     confirmPasswordResetValidations,
+    changePasswordValidations,
     validate
   };
 };
