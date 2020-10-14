@@ -22,6 +22,16 @@ let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
 let invalidAccessToken = 'invalid_id_token';
 
+jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
+  return { verifyIdToken: jest.fn((token) => {
+    if (token === 'anIdToken') {
+      return Promise.resolve({})
+    } else {
+      return Promise.reject(new Error("Crash!"))
+    }
+  })}
+}));
+
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
 });
@@ -209,6 +219,7 @@ describe('App test', () => {
             expect(res.status).toBe(200);
           });
       });
+
     });
 
     describe('failure', () => {
@@ -218,6 +229,16 @@ describe('App test', () => {
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+
+      test('should return 401 when invalid accessToken', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .send({ accessToken: invalidAccessToken })
+          .then(res => {
+            expect(res.status).toBe(401);
+            expect(res.body).toStrictEqual({ reason: 'Crash!' });
           });
       });
     });
@@ -262,7 +283,7 @@ describe('App test', () => {
   });
 
   describe('sendResetPasswordEmail', () => {
-    userEmail = "blabla@gmail.com";
+    const userEmail = "blabla@gmail.com";
 
     describe('send email', () => {
       beforeEach(() => {
@@ -284,8 +305,8 @@ describe('App test', () => {
   });
 
   describe('confirmResetPassword', () => {
-    newPassword = "NewPassword";
-    oobCode = "12345678";
+    const newPassword = "NewPassword";
+    const oobCode = "12345678";
 
     describe('confirm reset password', () => {
       beforeEach(() => {
@@ -307,7 +328,7 @@ describe('App test', () => {
   });
 
   describe('changePassword', () => {
-    newPassword = "NewPassword";
+    const newPassword = "NewPassword";
 
     describe('change password', () => {
       beforeEach(() => {
@@ -316,7 +337,7 @@ describe('App test', () => {
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
-      test('should return 200 when confirming the password reset with the oobCode received', async () => {
+      test('should return 200 when changing the password', async () => {
         await request(server)
           .post('/changePassword')
           .send({ accessToken, password: newPassword })
