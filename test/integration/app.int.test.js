@@ -370,7 +370,7 @@ describe('App test', () => {
   });
 
   describe('getUserData', () => {
-    response_example = {
+    firebase_response_example = {
       "users": [
         {
           "localId": "ZY1rJK0...",
@@ -400,11 +400,21 @@ describe('App test', () => {
       ]
     };
 
+    ct_auth_response_example = {
+      "userId": "ZY1rJK0...",
+      "email": "user@example.com",
+      "emailVerified": false,
+      "displayName": "John Doe",
+      "photoUrl": "https://lh5.googleusercontent.com/.../photo.jpg",
+      "lastLoginAt": "1484628946000",
+      "createdAt": "1484124142000"
+    };
+
     describe('getUserData', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:lookup?key=test', { idToken: accessToken })
-          .reply(200, response_example);
+          .reply(200, firebase_response_example);
       });
 
       test('should return 200 when sending the email to verify the account', async () => {
@@ -413,7 +423,7 @@ describe('App test', () => {
           .send({ accessToken })
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body).toStrictEqual(response_example);
+            expect(res.body).toStrictEqual(ct_auth_response_example);
           });
       });
     });
