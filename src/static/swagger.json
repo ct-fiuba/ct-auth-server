@@ -407,6 +407,96 @@
           }
         }
       }
+    },
+    "/sendEmailVerification": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "send email to verify the account",
+        "operationId": "sendEmailVerification",
+        "requestBody": {
+          "description": "Send Email Verification",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/sendEmailVerificationRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account verified correctly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/sendEmailVerificationResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/getUserData": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "get user data of the currently logged in use",
+        "operationId": "getUserData",
+        "requestBody": {
+          "description": "Get User Data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/getUserDataRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/getUserDataResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -645,6 +735,66 @@
           "userId": {
             "type": "string",
             "example": "tRcfmLH7n6082nlDF"
+          }
+        }
+      },
+      "sendEmailVerificationRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          }
+        }
+      },
+      "sendEmailVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "getUserDataRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          }
+        }
+      },
+      "getUserDataResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "example": true
+          },
+          "displayName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://lh5.googleusercontent.com/.../photo.jpg"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "example": "1484628946000"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "1484124142000"
           }
         }
       }

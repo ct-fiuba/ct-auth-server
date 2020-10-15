@@ -34,6 +34,14 @@ module.exports = function bodyValidatorMiddleware() {
     body(['accessToken', 'password'], 'Missing value').exists(),
   ];
 
+  const sendEmailVerificationValidations = [
+    body(['accessToken'], 'Missing value').exists(),
+  ];
+
+  const getUserDataValidations = [
+    body(['accessToken'], 'Missing value').exists(),
+  ];
+
   const validate = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -52,6 +60,8 @@ module.exports = function bodyValidatorMiddleware() {
     sendPasswordResetEmailValidations,
     confirmPasswordResetValidations,
     changePasswordValidations,
+    sendEmailVerificationValidations,
+    getUserDataValidations,
     validate
   };
 };

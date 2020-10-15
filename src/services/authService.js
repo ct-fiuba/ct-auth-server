@@ -40,6 +40,14 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.changePassword({ password: changePasswordInfo.password, idToken: changePasswordInfo.accessToken });
   };
 
+  const sendEmailVerification = accessToken => {
+    return firebaseGateway.sendEmailVerification(accessToken);
+  };
+
+  const getUserData = accessToken => {
+    return firebaseGateway.getUserData(accessToken);
+  };
+
   return {
     signUp,
     signIn,
@@ -50,6 +58,8 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     useGenuxToken,
     sendPasswordResetEmail,
     confirmPasswordReset,
-    changePassword
+    changePassword,
+    sendEmailVerification,
+    getUserData
   };
 };
