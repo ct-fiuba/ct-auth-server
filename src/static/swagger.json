@@ -272,6 +272,231 @@
           }
         }
       }
+    },
+    "/sendPasswordResetEmail": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "send an email to reset the password",
+        "operationId": "sendPasswordResetEmail",
+        "requestBody": {
+          "description": "Send Password Reset Email",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/sendPasswordResetEmailRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/sendPasswordResetEmailResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/confirmPasswordReset": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "confirm the password reset with the oob code received by email",
+        "operationId": "confirmPasswordReset",
+        "requestBody": {
+          "description": "Confirm Password Reset",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/confirmPasswordResetRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password resetted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/confirmPasswordResetResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/changePassword": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "change password of the current account while logged in",
+        "operationId": "changePassword",
+        "requestBody": {
+          "description": "Change Password",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/changePasswordRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password changed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/changePasswordResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/sendEmailVerification": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "send email to verify the account",
+        "operationId": "sendEmailVerification",
+        "requestBody": {
+          "description": "Send Email Verification",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/sendEmailVerificationRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account verified correctly",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/sendEmailVerificationResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
+    },
+    "/getUserData": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "get user data of the currently logged in use",
+        "operationId": "getUserData",
+        "requestBody": {
+          "description": "Get User Data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/getUserDataRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/getUserDataResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -361,7 +586,7 @@
           }
         }
       },
-      "validAccessTokenResponse": {
+      "validateAccessTokenResponse": {
         "type": "object",
         "properties": {
           "userId": {
@@ -428,6 +653,148 @@
           "genuxToken": {
             "type": "string",
             "example": "pomnopiu1poi5poiu1212345"
+          }
+        }
+      },
+      "sendPasswordResetEmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "sendPasswordResetEmailResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "confirmPasswordResetRequest": {
+        "type": "object",
+        "properties": {
+          "oobCode": {
+            "type": "string",
+            "example": "lkjovin1o234n5"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "securePassword"
+          }
+        }
+      },
+      "confirmPasswordResetResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "requestType": {
+            "type": "string",
+            "example": "PASSWORD_RESET"
+          }
+        }
+      },
+      "changePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword"
+          }
+        }
+      },
+      "changePasswordResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          },
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "lkj12341injh98nv98"
+          },
+          "expiresIn": {
+            "type": "string",
+            "example": 3600
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          }
+        }
+      },
+      "sendEmailVerificationRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          }
+        }
+      },
+      "sendEmailVerificationResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          }
+        }
+      },
+      "getUserDataRequest": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "qoiu21noi75081jnln"
+          }
+        }
+      },
+      "getUserDataResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "userId": {
+            "type": "string",
+            "example": "tRcfmLH7n6082nlDF"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "example": true
+          },
+          "displayName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://lh5.googleusercontent.com/.../photo.jpg"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "example": "1484628946000"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "1484124142000"
           }
         }
       }

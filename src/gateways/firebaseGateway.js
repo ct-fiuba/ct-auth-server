@@ -116,8 +116,16 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const getUserData = async idToken => {
     const { users } = await requestAuthFirebase('lookup', { idToken });
     dni_response = await getUserDNI(users[0]['localId']);
-    users[0]['DNI'] = dni_response[users[0]['localId']]['DNI'];
-    return { users };
+    return {
+      "userId": users[0]['localId'],
+      "email": users[0]['email'],
+      "emailVerified": users[0]['emailVerified'],
+      "displayName": users[0]['displayName'],
+      "photoUrl": users[0]['photoUrl'],
+      "lastLoginAt": users[0]['lastLoginAt'],
+      "createdAt": users[0]['createdAt'],
+      "DNI": dni_response[users[0]['localId']]['DNI']
+    };
   };
 
   return {

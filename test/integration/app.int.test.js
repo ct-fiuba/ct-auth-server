@@ -23,6 +23,16 @@ let invalidPassword = 'incorrect_password';
 let invalidRefreshToken = 'invalid_refresh_token';
 let invalidAccessToken = 'invalid_id_token';
 
+jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
+  return { verifyIdToken: jest.fn((token) => {
+    if (token === 'anIdToken') {
+      return Promise.resolve({})
+    } else {
+      return Promise.reject(new Error("Crash!"))
+    }
+  })}
+}));
+
 beforeAll(async () => {
   server = await app.listen(process.env.PORT);
 });
@@ -58,7 +68,7 @@ describe('App test', () => {
           .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
 
-        nock('https://ct-fiuba.firebaseio.com/rest')
+	      nock('https://ct-fiuba.firebaseio.com/rest')
           .put('/users.json', { aLocalId: { DNI: dni } })
           .reply(200, { aLocalId: { DNI: dni } });
       });
@@ -216,6 +226,7 @@ describe('App test', () => {
             expect(res.status).toBe(200);
           });
       });
+
     });
 
     describe('failure', () => {
@@ -225,6 +236,16 @@ describe('App test', () => {
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
+          });
+      });
+
+      test('should return 401 when invalid accessToken', async () => {
+        await request(server)
+          .post('/generateGenuxToken')
+          .send({ accessToken: invalidAccessToken })
+          .then(res => {
+            expect(res.status).toBe(401);
+            expect(res.body).toStrictEqual({ reason: 'Crash!' });
           });
       });
     });
@@ -269,7 +290,7 @@ describe('App test', () => {
   });
 
   describe('sendResetPasswordEmail', () => {
-    userEmail = "blabla@gmail.com";
+    const userEmail = "blabla@gmail.com";
 
     describe('send email', () => {
       beforeEach(() => {
@@ -291,8 +312,8 @@ describe('App test', () => {
   });
 
   describe('confirmResetPassword', () => {
-    newPassword = "NewPassword";
-    oobCode = "12345678";
+    const newPassword = "NewPassword";
+    const oobCode = "12345678";
 
     describe('confirm reset password', () => {
       beforeEach(() => {
@@ -314,7 +335,7 @@ describe('App test', () => {
   });
 
   describe('changePassword', () => {
-    newPassword = "NewPassword";
+    const newPassword = "NewPassword";
 
     describe('change password', () => {
       beforeEach(() => {
@@ -323,7 +344,7 @@ describe('App test', () => {
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
-      test('should return 200 when confirming the password reset with the oobCode received', async () => {
+      test('should return 200 when changing the password', async () => {
         await request(server)
           .post('/changePassword')
           .send({ accessToken, password: newPassword })
@@ -356,10 +377,11 @@ describe('App test', () => {
   });
 
   describe('getUserData', () => {
-    response_example = {
+    localId_get_user = "ZY1rJK0";
+    firebase_response_example = {
       "users": [
         {
-          "localId": localId,
+          "localId": localId_get_user,
           "email": "user@example.com",
           "emailVerified": false,
           "displayName": "John Doe",
@@ -386,27 +408,38 @@ describe('App test', () => {
       ]
     };
 
+    ct_auth_response_example = {
+      "userId": "ZY1rJK0",
+      "email": "user@example.com",
+      "emailVerified": false,
+      "displayName": "John Doe",
+      "photoUrl": "https://lh5.googleusercontent.com/.../photo.jpg",
+      "lastLoginAt": "1484628946000",
+      "createdAt": "1484124142000",
+      "DNI": dni
+    };
+
+    let firebase_db_response = {}
+    firebase_db_response[localId_get_user] = {DNI: dni};
+
     describe('getUserData', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:lookup?key=test', { idToken: accessToken })
-          .reply(200, response_example);
+          .reply(200, firebase_response_example);
 
-        let response = {}
-        response[localId] = {DNI: dni};
         nock('https://ct-fiuba.firebaseio.com/rest')
-          .get(`/users.json?orderBy=%22$key%22&equalTo="${localId}"`)
-          .reply(200, response);
+          .get(`/users.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
+          .reply(200, firebase_db_response);
       });
 
-      test('should return 200 when sending the email to verify the account', async () => {
+      test('should return 200 when retrieving user data', async () => {
         await request(server)
           .post('/getUserData')
           .send({ accessToken })
           .then(res => {
             expect(res.status).toBe(200);
-            response_example['users'][0]['DNI'] = dni;
-            expect(res.body).toStrictEqual(response_example);
+            expect(res.body).toStrictEqual(ct_auth_response_example);
           });
       });
     });
