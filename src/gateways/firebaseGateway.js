@@ -6,6 +6,10 @@ module.exports = function firebaseGateway(firebaseAuth) {
     prefixUrl: 'https://identitytoolkit.googleapis.com/v1'
   });
 
+  const firebaseDatabaseAPI = got.extend({
+    prefixUrl: 'https://ct-fiuba.firebaseio.com/rest'
+  });
+
   const requestAuthFirebase = (action, data) => {
     return firebaseAPI.post(`accounts:${action}?key=${process.env.FIREBASE_API_KEY}`, { json: data })
       .then(firebaseResponse => {
@@ -18,8 +22,35 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
+  const putUserDNI = (userId, dni) => {
+    const payload = {};
+    payload[userId] = {DNI: dni};
+    return firebaseDatabaseAPI.put("users.json", { json: payload })
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
+  const getUserDNI = (userId) => {
+    return firebaseDatabaseAPI.get(`users.json?orderBy="$key"&equalTo="${userId}"`)
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
+    await putUserDNI(localId, userInfo.DNI);
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
@@ -84,6 +115,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   const getUserData = async idToken => {
     const { users } = await requestAuthFirebase('lookup', { idToken });
+    dni_response = await getUserDNI(users[0]['localId']);
     return {
       "userId": users[0]['localId'],
       "email": users[0]['email'],
@@ -91,7 +123,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "displayName": users[0]['displayName'],
       "photoUrl": users[0]['photoUrl'],
       "lastLoginAt": users[0]['lastLoginAt'],
-      "createdAt": users[0]['createdAt']
+      "createdAt": users[0]['createdAt'],
+      "DNI": dni_response[users[0]['localId']]['DNI']
     };
   };
 

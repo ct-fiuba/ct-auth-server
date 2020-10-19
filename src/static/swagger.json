@@ -511,6 +511,10 @@
           "password": {
             "type": "string",
             "example": "securePassword"
+          },
+          "DNI": {
+            "type": "string",
+            "example": "40404040"
           }
         }
       },
@@ -795,6 +799,10 @@
           "createdAt": {
             "type": "string",
             "example": "1484124142000"
+          },
+          "DNI": {
+            "type": "string",
+            "example": "40404040"
           }
         }
       }

@@ -8,6 +8,7 @@ mongoose.connect(mongoURL);
 let server;
 let userEmail = 'email@test.com';
 let password = 'correct_password';
+let dni = '40402425';
 
 let accessToken = 'anIdToken';
 let refreshToken = 'aRefreshToken';
@@ -51,12 +52,14 @@ describe('App test', () => {
   describe('signUp', () => {
     const user = {
       email: userEmail,
-      password
+      password,
+      DNI: dni
     };
 
     const invalidUser = {
       email: invalidEmail,
-      password
+      password,
+      DNI: dni
     };
 
     describe('create user success', () => {
@@ -64,6 +67,10 @@ describe('App test', () => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
+
+	      nock('https://ct-fiuba.firebaseio.com/rest')
+          .put('/users.json', { aLocalId: { DNI: dni } })
+          .reply(200, { aLocalId: { DNI: dni } });
       });
 
       test('should return 201 with parse body', async () => {
@@ -370,10 +377,11 @@ describe('App test', () => {
   });
 
   describe('getUserData', () => {
+    localId_get_user = "ZY1rJK0";
     firebase_response_example = {
       "users": [
         {
-          "localId": "ZY1rJK0...",
+          "localId": localId_get_user,
           "email": "user@example.com",
           "emailVerified": false,
           "displayName": "John Doe",
@@ -401,23 +409,31 @@ describe('App test', () => {
     };
 
     ct_auth_response_example = {
-      "userId": "ZY1rJK0...",
+      "userId": localId_get_user,
       "email": "user@example.com",
       "emailVerified": false,
       "displayName": "John Doe",
       "photoUrl": "https://lh5.googleusercontent.com/.../photo.jpg",
       "lastLoginAt": "1484628946000",
-      "createdAt": "1484124142000"
+      "createdAt": "1484124142000",
+      "DNI": dni
     };
+
+    let firebase_db_response = {}
+    firebase_db_response[localId_get_user] = {DNI: dni};
 
     describe('getUserData', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
           .post('/accounts:lookup?key=test', { idToken: accessToken })
           .reply(200, firebase_response_example);
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .get(`/users.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
+          .reply(200, firebase_db_response);
       });
 
-      test('should return 200 when sending the email to verify the account', async () => {
+      test('should return 200 when retrieving user data', async () => {
         await request(server)
           .post('/getUserData')
           .send({ accessToken })
