@@ -409,7 +409,7 @@ describe('App test', () => {
     };
 
     ct_auth_response_example = {
-      "userId": "ZY1rJK0",
+      "userId": localId_get_user,
       "email": "user@example.com",
       "emailVerified": false,
       "displayName": "John Doe",
