@@ -423,7 +423,7 @@ describe('App test', () => {
     let firebase_db_dni_response = {}
     firebase_db_dni_response[localId_get_user] = {DNI: dni};
     let firebase_db_admin_response = {}
-    firebase_db_admin_response[localId_get_user] = true;
+    firebase_db_admin_response[localId_get_user] = false;
 
     describe('getUserData', () => {
       beforeEach(() => {
