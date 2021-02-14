@@ -803,6 +803,10 @@
           "DNI": {
             "type": "string",
             "example": "40404040"
+          },
+          "admin": {
+            "type": "boolean",
+            "example": true
           }
         }
       }
