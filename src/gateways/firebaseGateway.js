@@ -138,7 +138,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
       "DNI": dni_response.hasOwnProperty(users[0]['localId']) ? dni_response[users[0]['localId']]['DNI'] : "Sin documento registrado",
-      "admin": admin_response.hasOwnProperty(users[0]['localId']) ? true : false
+      "admin": admin_response.hasOwnProperty(users[0]['localId']) ? admin_response[users[0]['localId']] : false
     };
   };
 
