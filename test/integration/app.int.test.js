@@ -417,13 +417,11 @@ describe('App test', () => {
       "lastLoginAt": "1484628946000",
       "createdAt": "1484124142000",
       "DNI": dni,
-      "admin": false,
+      "role": "regular",
     };
 
     let firebase_db_dni_response = {}
     firebase_db_dni_response[localId_get_user] = {DNI: dni};
-    let firebase_db_admin_response = {}
-    firebase_db_admin_response[localId_get_user] = false;
 
     describe('getUserData', () => {
       beforeEach(() => {
@@ -436,8 +434,8 @@ describe('App test', () => {
           .reply(200, firebase_db_dni_response);
 
         nock('https://ct-fiuba.firebaseio.com/rest')
-          .get(`/admin.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
-          .reply(200, firebase_db_admin_response);
+          .get(`/role.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
+          .reply(200, {});
       });
 
       test('should return 200 when retrieving user data', async () => {

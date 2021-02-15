@@ -48,8 +48,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
-  const isAdminUser = (userId) => {
-    return firebaseDatabaseAPI.get(`admin.json?orderBy="$key"&equalTo="${userId}"`)
+  const getUserRole = (userId) => {
+    return firebaseDatabaseAPI.get(`role.json?orderBy="$key"&equalTo="${userId}"`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -128,7 +128,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const getUserData = async idToken => {
     const { users } = await requestAuthFirebase('lookup', { idToken });
     dni_response = await getUserDNI(users[0]['localId']);
-    admin_response = await isAdminUser(users[0]['localId']);
+    role_response = await getUserRole(users[0]['localId']);
     return {
       "userId": users[0]['localId'],
       "email": users[0]['email'],
@@ -138,7 +138,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
       "DNI": dni_response.hasOwnProperty(users[0]['localId']) ? dni_response[users[0]['localId']]['DNI'] : "Sin documento registrado",
-      "admin": admin_response.hasOwnProperty(users[0]['localId']) ? admin_response[users[0]['localId']] : false
+      "role": role_response.hasOwnProperty(users[0]['localId']) ? role_response[users[0]['localId']] : "regular"
     };
   };
 
