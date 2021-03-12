@@ -22,4 +22,4 @@ Pueden correrse tanto tests unitarios como de integracion:
 
 ### Usuarios Administradores
 
-Para validar si un usuario es administrador o no, se usa el endpoint `/getUserData`, el cual devuelve un parámetro booleano `admin`. Para crear usuarios administradores tenemos que ir a la consola de Firebase, Authentication, Users, y obtener el User UID del usuario que queremos convertir en administrador. Luego vamos a Realtime Database, y dentro de la colección `ct-fiuba/rest/admin` crear el documento `<user UID>: true`.
+Para validar si un usuario es administrador o no, se usa el endpoint `/getUserData`, el cual devuelve un parámetro `role` que puede tener el valor "regular" o "admin". Para crear usuarios administradores tenemos que ir a la consola de Firtrueebase, Authentication, Users, y obtener el User UID del usuario que queremos convertir en administrador. Luego vamos a Realtime Database, y dentro de la colección `ct-fiuba/rest/role` crear el documento `<user UID>: admin`.
