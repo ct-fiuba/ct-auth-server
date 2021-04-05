@@ -416,11 +416,12 @@ describe('App test', () => {
       "photoUrl": "https://lh5.googleusercontent.com/.../photo.jpg",
       "lastLoginAt": "1484628946000",
       "createdAt": "1484124142000",
-      "DNI": dni
+      "DNI": dni,
+      "role": "regular",
     };
 
-    let firebase_db_response = {}
-    firebase_db_response[localId_get_user] = {DNI: dni};
+    let firebase_db_dni_response = {}
+    firebase_db_dni_response[localId_get_user] = {DNI: dni};
 
     describe('getUserData', () => {
       beforeEach(() => {
@@ -430,7 +431,11 @@ describe('App test', () => {
 
         nock('https://ct-fiuba.firebaseio.com/rest')
           .get(`/users.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
-          .reply(200, firebase_db_response);
+          .reply(200, firebase_db_dni_response);
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .get(`/role.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
+          .reply(200, {});
       });
 
       test('should return 200 when retrieving user data', async () => {

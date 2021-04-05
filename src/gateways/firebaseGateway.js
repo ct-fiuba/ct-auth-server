@@ -48,6 +48,18 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
+  const getUserRole = (userId) => {
+    return firebaseDatabaseAPI.get(`role.json?orderBy="$key"&equalTo="${userId}"`)
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
     await putUserDNI(localId, userInfo.DNI);
@@ -116,6 +128,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const getUserData = async idToken => {
     const { users } = await requestAuthFirebase('lookup', { idToken });
     dni_response = await getUserDNI(users[0]['localId']);
+    role_response = await getUserRole(users[0]['localId']);
     return {
       "userId": users[0]['localId'],
       "email": users[0]['email'],
@@ -124,7 +137,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "photoUrl": users[0]['photoUrl'],
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
-      "DNI": dni_response[users[0]['localId']]['DNI']
+      "DNI": dni_response.hasOwnProperty(users[0]['localId']) ? dni_response[users[0]['localId']]['DNI'] : "Sin documento registrado",
+      "role": role_response.hasOwnProperty(users[0]['localId']) ? role_response[users[0]['localId']] : "regular"
     };
   };
 

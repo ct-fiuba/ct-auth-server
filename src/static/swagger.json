@@ -803,6 +803,10 @@
           "DNI": {
             "type": "string",
             "example": "40404040"
+          },
+          "role": {
+            "type": "string",
+            "example": "regular"
           }
         }
       }
