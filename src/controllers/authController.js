@@ -1,12 +1,24 @@
 module.exports = function authController(authService) {
-  const signUp = (req, res, next) => {
-    authService.signUp(req.body)
+  const usersSignUp = (req, res, next) => {
+    authService.usersSignUp(req.body)
       .then(response => res.status(200).json(response))
       .catch(next);
-  };
+  }
 
-  const signIn = async (req, res, next) => {
-    authService.signIn(req.body)
+  const usersSignIn = async (req, res, next) => {
+    authService.usersSignIn(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const ownersSignUp = (req, res, next) => {
+    authService.ownersSignUp(req.body)
+      .then(response => res.status(200).json(response))
+      .catch(next);
+  }
+
+  const ownersSignIn = async (req, res, next) => {
+    authService.ownersSignIn(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
@@ -72,8 +84,10 @@ module.exports = function authController(authService) {
   }
 
   return {
-    signUp,
-    signIn,
+    usersSignIn,
+    ownersSignIn,
+    usersSignUp,
+    ownersSignUp,
     validateAccessToken,
     refreshToken,
     deleteUser,

@@ -2,8 +2,12 @@ const { body, validationResult } = require('express-validator');
 const { RequestError } = require('../errors/requestError');
 
 module.exports = function bodyValidatorMiddleware() {
-  const signUpValidations = [
+  const usersSignUpValidations = [
     body(['email', 'password', 'DNI'], 'Missing value').exists(),
+  ];
+
+  const ownersSignUpValidations = [
+    body(['email', 'password'], 'Missing value').exists(),
   ];
 
   const signInValidations = [
@@ -56,7 +60,8 @@ module.exports = function bodyValidatorMiddleware() {
   }
 
   return {
-    signUpValidations,
+    usersSignUpValidations,
+    ownersSignUpValidations,
     signInValidations,
     validateTokenValidations,
     refreshTokenValidations,

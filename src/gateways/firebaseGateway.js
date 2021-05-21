@@ -1,5 +1,6 @@
 const got = require('got');
 const { RequestError } = require('../errors/requestError');
+const { replaceOne } = require('../models/schemas/ValidGenuxToken');
 
 module.exports = function firebaseGateway(firebaseAuth) {
   const firebaseAPI = got.extend({
@@ -22,10 +23,20 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
-  const putUserDNI = (userId, dni) => {
-    const payload = {};
-    payload[userId] = {DNI: dni};
-    return firebaseDatabaseAPI.put("users.json", { json: payload })
+  const pushUserDNI = (userId, dni) => {
+    return firebaseDatabaseAPI.put(`users/${userId}/dni.json`, {json: {dni}})
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
+  const pushUserRole = (userId, role) => {
+    return firebaseDatabaseAPI.put(`users/${userId}/role.json`, {json: {role}})
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -37,7 +48,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const getUserDNI = (userId) => {
-    return firebaseDatabaseAPI.get(`users.json?orderBy="$key"&equalTo="${userId}"`)
+    return firebaseDatabaseAPI.get(`users/${userId}/dni.json?print=pretty`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -49,7 +60,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const getUserRole = (userId) => {
-    return firebaseDatabaseAPI.get(`role.json?orderBy="$key"&equalTo="${userId}"`)
+    return firebaseDatabaseAPI.get(`users/${userId}/role.json?print=pretty`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -62,13 +73,47 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
-    await putUserDNI(localId, userInfo.DNI);
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
   const signIn = async credentials => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', { ...credentials, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
+  };
+
+  const usersSignUp = async userInfo => {
+    const response = await signUp(userInfo);
+    const dniResponse = await pushUserDNI(response.userId, userInfo.DNI);
+    const roleResponse = await pushUserRole(response.userId, 'user');
+    return {...response, ...dniResponse, ...roleResponse};
+  };
+
+  const ownersSignUp = async ownerInfo => {
+    const response = await signUp(ownerInfo);
+    const roleResponse = await pushUserRole(response.userId, 'owner');
+    return {...response, ...roleResponse};
+  };
+
+  const usersSignIn = async credentials => {
+    const response = await signIn(credentials);
+    let dniResponse = await getUserDNI(response.userId);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+      throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
+    }
+    if (!dniResponse.hasOwnProperty('dni')) {
+      dniResponse = {dni: 'Sin documento registrado'};
+    }
+    return {...response, ...dniResponse, ...roleResponse};
+  };
+
+  const ownersSignIn = async credentials => {
+    const response = await signIn(credentials);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+      throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
+    }
+    return {...response, ...roleResponse};
   };
 
   const validateIdToken = async idToken => {
@@ -137,14 +182,16 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "photoUrl": users[0]['photoUrl'],
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
-      "DNI": dni_response.hasOwnProperty(users[0]['localId']) ? dni_response[users[0]['localId']]['DNI'] : "Sin documento registrado",
-      "role": role_response.hasOwnProperty(users[0]['localId']) ? role_response[users[0]['localId']] : "regular"
+      "DNI": dni_response.hasOwnProperty('dni') ? dni_response['dni'] : "Sin documento registrado",
+      "role": role_response.hasOwnProperty('role') ? role_response['role'] : "Sin rol asignado"
     };
   };
 
   return {
-    signUp,
-    signIn,
+    usersSignUp,
+    usersSignIn,
+    ownersSignUp,
+    ownersSignIn,
     validateIdToken,
     refreshToken,
     deleteUser,

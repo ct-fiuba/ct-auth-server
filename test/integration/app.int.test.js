@@ -24,13 +24,15 @@ let invalidRefreshToken = 'invalid_refresh_token';
 let invalidAccessToken = 'invalid_id_token';
 
 jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
-  return { verifyIdToken: jest.fn((token) => {
-    if (token === 'anIdToken') {
-      return Promise.resolve({})
-    } else {
-      return Promise.reject(new Error("Crash!"))
-    }
-  })}
+  return {
+    verifyIdToken: jest.fn((token) => {
+      if (token === 'anIdToken') {
+        return Promise.resolve({})
+      } else {
+        return Promise.reject(new Error("Crash!"))
+      }
+    })
+  }
 }));
 
 beforeAll(async () => {
@@ -68,18 +70,30 @@ describe('App test', () => {
           .post('/accounts:signUp?key=test', { ...user, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
 
-	      nock('https://ct-fiuba.firebaseio.com/rest')
-          .put('/users.json', { aLocalId: { DNI: dni } })
-          .reply(200, { aLocalId: { DNI: dni } });
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .put('/users/aLocalId/dni.json', { dni })
+          .reply(200, { dni });
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .get('/users/aLocalId/dni.json?print=pretty')
+          .reply(200, { dni });
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .put('/users/aLocalId/role.json', { role: 'user' })
+          .reply(200, { role: 'user' });
+
+        nock('https://ct-fiuba.firebaseio.com/rest')
+          .get('/users/aLocalId/role.json?print=pretty')
+          .reply(200, { role: 'user' });
       });
 
       test('should return 201 with parse body', async () => {
         await request(server)
-          .post('/signUp')
+          .post('/users/signUp')
           .send(user)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId, dni, role: 'user' });
           });
       });
     });
@@ -93,7 +107,7 @@ describe('App test', () => {
 
       test('should return 400', async () => {
         await request(server)
-          .post('/signUp')
+          .post('/users/signUp')
           .send(invalidUser)
           .then(res => {
             expect(res.status).toBe(400);
@@ -103,7 +117,7 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server)
-          .post('/signUp')
+          .post('/users/signUp')
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
@@ -132,11 +146,11 @@ describe('App test', () => {
 
       test('should return 200 with parse body', async () => {
         await request(server)
-          .post('/signIn')
+          .post('/users/signIn')
           .send(validUser)
           .then(res => {
             expect(res.status).toBe(200);
-            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId });
+            expect(res.body).toStrictEqual({ accessToken, email: userEmail, refreshToken, expiresIn, userId: localId, dni, role: 'user' });
           });
       });
     });
@@ -150,7 +164,7 @@ describe('App test', () => {
 
       test('should return 400', async () => {
         await request(server)
-          .post('/signIn')
+          .post('/users/signIn')
           .send(invalidUser)
           .then(res => {
             expect(res.status).toBe(400);
@@ -160,7 +174,7 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server)
-          .post('/signIn')
+          .post('/users/signIn')
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });
@@ -417,11 +431,11 @@ describe('App test', () => {
       "lastLoginAt": "1484628946000",
       "createdAt": "1484124142000",
       "DNI": dni,
-      "role": "regular",
+      "role": "user",
     };
 
     let firebase_db_dni_response = {}
-    firebase_db_dni_response[localId_get_user] = {DNI: dni};
+    firebase_db_dni_response[localId_get_user] = { DNI: dni };
 
     describe('getUserData', () => {
       beforeEach(() => {
@@ -430,12 +444,12 @@ describe('App test', () => {
           .reply(200, firebase_response_example);
 
         nock('https://ct-fiuba.firebaseio.com/rest')
-          .get(`/users.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
-          .reply(200, firebase_db_dni_response);
+          .get(`/users/${localId_get_user}/dni.json?print=pretty`)
+          .reply(200, { dni });
 
-        nock('https://ct-fiuba.firebaseio.com/rest')
-          .get(`/role.json?orderBy=%22$key%22&equalTo="${localId_get_user}"`)
-          .reply(200, {});
+          nock('https://ct-fiuba.firebaseio.com/rest')
+          .get(`/users/${localId_get_user}/role.json?print=pretty`)
+          .reply(200, { role: 'user' });
       });
 
       test('should return 200 when retrieving user data', async () => {
