@@ -17,6 +17,7 @@ module.exports = function authRouter() {
       .post('/users/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.usersSignIn)
       .post('/owners/signUp', bodyValidator.ownersSignUpValidations, bodyValidator.validate, authController.ownersSignUp)
       .post('/owners/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.ownersSignIn)
+      .post('/admins/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.adminsSignIn)
       .post('/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.validateAccessToken)
       .post('/refreshToken', bodyValidator.refreshTokenValidations, bodyValidator.validate, authController.refreshToken)
       .post('/deleteUser', bodyValidator.deleteUserValidations, bodyValidator.validate, authController.deleteUser)

@@ -116,6 +116,15 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return {...response, ...roleResponse};
   };
 
+  const adminsSignIn = async credentials => {
+    const response = await signIn(credentials);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+      throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
+    }
+    return {...response, ...roleResponse};
+  };
+
   const validateIdToken = async idToken => {
     return firebaseAuth.verifyIdToken(idToken, true)
       .then(decodedToken => decodedToken.uid)
@@ -192,6 +201,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     usersSignIn,
     ownersSignUp,
     ownersSignIn,
+    adminsSignIn,
     validateIdToken,
     refreshToken,
     deleteUser,

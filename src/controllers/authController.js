@@ -23,6 +23,12 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
+  const adminsSignIn = async (req, res, next) => {
+    authService.adminsSignIn(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
   const validateAccessToken = async (req, res, next) => {
     authService.validateAccessToken(req.body)
       .then(response => res.json(response))
@@ -86,6 +92,7 @@ module.exports = function authController(authService) {
   return {
     usersSignIn,
     ownersSignIn,
+    adminsSignIn,
     usersSignUp,
     ownersSignUp,
     validateAccessToken,

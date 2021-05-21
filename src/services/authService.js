@@ -15,6 +15,10 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.ownersSignIn(credentials);
   };
 
+  const adminsSignIn = credentials => {
+    return firebaseGateway.adminsSignIn(credentials);
+  };
+
   const validateAccessToken = ({ accessToken }) => {
     return firebaseGateway.validateIdToken(accessToken);
   };
@@ -61,6 +65,7 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     ownersSignUp,
     usersSignIn,
     ownersSignIn,
+    adminsSignIn,
     validateAccessToken,
     refreshToken,
     deleteUser,
