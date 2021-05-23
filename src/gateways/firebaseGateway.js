@@ -133,6 +133,57 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   };
 
+  const usersValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+        throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, 401);
+    }
+  };
+
+  const ownersValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+        throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, 401);
+    }
+  };
+
+  const adminsValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+        throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, 401);
+    }
+  };
+
   const refreshToken  = async ({ refreshToken }) => {
     return got.post(`https://securetoken.googleapis.com/v1/token?key=${process.env.FIREBASE_API_KEY}`, {
         json: {
@@ -203,6 +254,9 @@ module.exports = function firebaseGateway(firebaseAuth) {
     ownersSignIn,
     adminsSignIn,
     validateIdToken,
+    usersValidateIdToken,
+    ownersValidateIdToken,
+    adminsValidateIdToken,
     refreshToken,
     deleteUser,
     sendPasswordResetEmail,

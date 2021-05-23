@@ -35,6 +35,24 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
+  const usersValidateAccessToken = async (req, res, next) => {
+    authService.usersValidateAccessToken(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const ownersValidateAccessToken = async (req, res, next) => {
+    authService.ownersValidateAccessToken(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const adminsValidateAccessToken = async (req, res, next) => {
+    authService.adminsValidateAccessToken(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
   const refreshToken = async (req, res, next) => {
     authService.refreshToken(req.body)
       .then(response => res.json(response))
@@ -96,6 +114,9 @@ module.exports = function authController(authService) {
     usersSignUp,
     ownersSignUp,
     validateAccessToken,
+    usersValidateAccessToken,
+    ownersValidateAccessToken,
+    adminsValidateAccessToken,
     refreshToken,
     deleteUser,
     generateGenuxToken,
