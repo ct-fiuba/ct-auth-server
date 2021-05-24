@@ -27,7 +27,7 @@ jest.mock('../../src/gateways/firebase-auth', () => jest.fn(() => {
   return {
     verifyIdToken: jest.fn((token) => {
       if (token === 'anIdToken') {
-        return Promise.resolve({})
+        return Promise.resolve({'uid': 'aLocalId'})
       } else {
         return Promise.reject(new Error("Crash!"))
       }
@@ -231,6 +231,12 @@ describe('App test', () => {
   });
 
   describe('generateGenuxToken', () => {
+    beforeEach(() => {
+      nock('https://ct-fiuba.firebaseio.com/rest')
+        .get(`/users/aLocalId/role.json?print=pretty`)
+        .reply(200, { role: 'user' });
+    });
+
     describe('success', () => {
       test('should return 200 with genuxToken', async () => {
         await request(server)
@@ -266,6 +272,12 @@ describe('App test', () => {
   });
 
   describe('useGenuxToken', () => {
+    beforeEach(() => {
+      nock('https://ct-fiuba.firebaseio.com/rest')
+        .get(`/users/1/role.json?print=pretty`)
+        .reply(200, { role: 'user' });
+    });
+
     describe('success', () => {
       test('should return 204 when valid genux token', async () => {
         await request(server)

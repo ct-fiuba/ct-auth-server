@@ -19,10 +19,6 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.adminsSignIn(credentials);
   };
 
-  const validateAccessToken = ({ accessToken }) => {
-    return firebaseGateway.validateIdToken(accessToken);
-  };
-
   const usersValidateAccessToken = ({ accessToken }) => {
     return firebaseGateway.usersValidateIdToken(accessToken);
   };
@@ -44,7 +40,7 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
   };
 
   const generateGenuxToken = async accessToken =>
-    firebaseGateway.validateIdToken(accessToken).then(() => {
+    firebaseGateway.usersValidateIdToken(accessToken).then(() => {
       return genuxTokenHandler.createGenuxToken();
     });
 
@@ -78,7 +74,6 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     usersSignIn,
     ownersSignIn,
     adminsSignIn,
-    validateAccessToken,
     usersValidateAccessToken,
     ownersValidateAccessToken,
     adminsValidateAccessToken,

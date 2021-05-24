@@ -18,7 +18,6 @@ module.exports = function authRouter() {
       .post('/owners/signUp', bodyValidator.ownersSignUpValidations, bodyValidator.validate, authController.ownersSignUp)
       .post('/owners/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.ownersSignIn)
       .post('/admins/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.adminsSignIn)
-      .post('/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.validateAccessToken)
       .post('/users/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.usersValidateAccessToken)
       .post('/owners/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.ownersValidateAccessToken)
       .post('/admins/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.adminsValidateAccessToken)

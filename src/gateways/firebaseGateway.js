@@ -125,14 +125,6 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return {...response, ...roleResponse};
   };
 
-  const validateIdToken = async idToken => {
-    return firebaseAuth.verifyIdToken(idToken, true)
-      .then(decodedToken => decodedToken.uid)
-      .catch(error => {
-        throw new RequestError(error.message, 401);
-      });
-  };
-
   const usersValidateIdToken = async idToken => {
     try {
       const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
@@ -146,7 +138,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       return userId;
     } catch (err) {
-      throw new RequestError(err.message, 401);
+      throw new RequestError(err.message, err.status || 401);
     }
   };
 
@@ -163,7 +155,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       return userId;
     } catch (err) {
-      throw new RequestError(err.message, 401);
+      throw new RequestError(err.message, err.status || 401);
     }
   };
 
@@ -180,7 +172,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       return userId;
     } catch (err) {
-      throw new RequestError(err.message, 401);
+      throw new RequestError(err.message, err.status || 401);
     }
   };
 
@@ -253,7 +245,6 @@ module.exports = function firebaseGateway(firebaseAuth) {
     ownersSignUp,
     ownersSignIn,
     adminsSignIn,
-    validateIdToken,
     usersValidateIdToken,
     ownersValidateIdToken,
     adminsValidateIdToken,
