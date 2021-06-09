@@ -71,6 +71,19 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
+  const deleteInFirebaseDB = (userId) => {
+    return firebaseDatabaseAPI.delete(`users/${userId}.json`)
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
+
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
@@ -196,7 +209,10 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   const deleteUser = async ({ userId }) => {
     return firebaseAuth.deleteUser(userId)
-      .then(() => userId)
+      .then(() => {
+        return deleteInFirebaseDB(userId)
+          .then((firebaseResponse) => firebaseResponse)
+      })
       .catch(function(error) {
         throw new RequestError(error.message, 400);
       });
