@@ -61,6 +61,9 @@ describe('deleteUser', () => {
   describe('Valid User ID', () => {
     beforeEach(() => {
       firebaseAuth.deleteUser.mockResolvedValue("ok!");
+      nock('https://ct-fiuba.firebaseio.com/rest')
+        .delete('/users/validUser1.json')
+        .reply(200);
     });
 
     test('should respond successfully', async () => {

@@ -71,10 +71,10 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
-  const deleteInFirebaseDB = (userId) => {
+  const deleteUserInFirebaseDB = (userId) => {
     return firebaseDatabaseAPI.delete(`users/${userId}.json`)
-      .then(firebaseDatabaseResponse => {
-        return JSON.parse(firebaseDatabaseResponse.body);
+      .then(res => {
+        return userId;
       })
       .catch(error => {
         const status = error.response.statusCode;
@@ -210,7 +210,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const deleteUser = async ({ userId }) => {
     return firebaseAuth.deleteUser(userId)
       .then(() => {
-        return deleteInFirebaseDB(userId)
+        return deleteUserInFirebaseDB(userId)
           .then((firebaseResponse) => firebaseResponse)
       })
       .catch(function(error) {
