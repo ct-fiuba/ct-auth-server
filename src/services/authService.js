@@ -3,20 +3,20 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
     return firebaseGateway.usersSignUp(userInfo);
   };
 
-  const usersSignIn = credentials => {
-    return firebaseGateway.usersSignIn(credentials);
+  const usersLogIn = credentials => {
+    return firebaseGateway.usersLogIn(credentials);
   };
 
   const ownersSignUp = ownerInfo => {
     return firebaseGateway.ownersSignUp(ownerInfo);
   };
 
-  const ownersSignIn = credentials => {
-    return firebaseGateway.ownersSignIn(credentials);
+  const ownersLogIn = credentials => {
+    return firebaseGateway.ownersLogIn(credentials);
   };
 
-  const adminsSignIn = credentials => {
-    return firebaseGateway.adminsSignIn(credentials);
+  const adminsLogIn = credentials => {
+    return firebaseGateway.adminsLogIn(credentials);
   };
 
   const usersValidateAccessToken = ({ accessToken }) => {
@@ -71,9 +71,9 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
   return {
     usersSignUp,
     ownersSignUp,
-    usersSignIn,
-    ownersSignIn,
-    adminsSignIn,
+    usersLogIn,
+    ownersLogIn,
+    adminsLogIn,
     usersValidateAccessToken,
     ownersValidateAccessToken,
     adminsValidateAccessToken,

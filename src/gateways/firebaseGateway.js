@@ -89,8 +89,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const signIn = async credentials => {
-    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', { ...credentials, returnSecureToken: true });
+  const logIn = async credentials => {
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('logInWithPassword', { ...credentials, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
@@ -107,8 +107,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return {...response, ...roleResponse};
   };
 
-  const usersSignIn = async credentials => {
-    const response = await signIn(credentials);
+  const usersLogIn = async credentials => {
+    const response = await logIn(credentials);
     let dniResponse = await getUserDNI(response.userId);
     const roleResponse = await getUserRole(response.userId);
     if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
@@ -120,8 +120,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return {...response, ...dniResponse, ...roleResponse};
   };
 
-  const ownersSignIn = async credentials => {
-    const response = await signIn(credentials);
+  const ownersLogIn = async credentials => {
+    const response = await logIn(credentials);
     const roleResponse = await getUserRole(response.userId);
     if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
       throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
@@ -129,8 +129,8 @@ module.exports = function firebaseGateway(firebaseAuth) {
     return {...response, ...roleResponse};
   };
 
-  const adminsSignIn = async credentials => {
-    const response = await signIn(credentials);
+  const adminsLogIn = async credentials => {
+    const response = await logIn(credentials);
     const roleResponse = await getUserRole(response.userId);
     if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
       throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
@@ -257,10 +257,10 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   return {
     usersSignUp,
-    usersSignIn,
+    usersLogIn,
     ownersSignUp,
-    ownersSignIn,
-    adminsSignIn,
+    ownersLogIn,
+    adminsLogIn,
     usersValidateIdToken,
     ownersValidateIdToken,
     adminsValidateIdToken,

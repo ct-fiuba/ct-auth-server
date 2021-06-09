@@ -14,10 +14,10 @@ module.exports = function authRouter() {
     '/',
     express.Router()
       .post('/users/signUp', bodyValidator.usersSignUpValidations, bodyValidator.validate, authController.usersSignUp)
-      .post('/users/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.usersSignIn)
+      .post('/users/logIn', bodyValidator.logInValidations, bodyValidator.validate, authController.usersLogIn)
       .post('/owners/signUp', bodyValidator.ownersSignUpValidations, bodyValidator.validate, authController.ownersSignUp)
-      .post('/owners/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.ownersSignIn)
-      .post('/admins/signIn', bodyValidator.signInValidations, bodyValidator.validate, authController.adminsSignIn)
+      .post('/owners/logIn', bodyValidator.logInValidations, bodyValidator.validate, authController.ownersLogIn)
+      .post('/admins/logIn', bodyValidator.logInValidations, bodyValidator.validate, authController.adminsLogIn)
       .post('/users/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.usersValidateAccessToken)
       .post('/owners/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.ownersValidateAccessToken)
       .post('/admins/validateAccessToken', bodyValidator.validateTokenValidations, bodyValidator.validate, authController.adminsValidateAccessToken)

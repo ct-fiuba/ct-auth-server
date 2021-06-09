@@ -108,13 +108,13 @@
         }
       }
     },
-    "/users/signIn": {
+    "/users/logIn": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
         "summary": "Log in with email and password for role user",
-        "operationId": "usersSignIn",
+        "operationId": "usersLogIn",
         "requestBody": {
           "description": "Login user",
           "required": true,
@@ -124,7 +124,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/signInRequest"
+                    "$ref": "#/components/schemas/logInRequest"
                   }
                 ]
               }
@@ -140,7 +140,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/signInResponse"
+                      "$ref": "#/components/schemas/logInResponse"
                     }
                   ]
                 }
@@ -156,13 +156,13 @@
         }
       }
     },
-    "/owners/signIn": {
+    "/owners/logIn": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
         "summary": "Log in with email and password for role owner",
-        "operationId": "ownersSignIn",
+        "operationId": "ownersLogIn",
         "requestBody": {
           "description": "Login owner",
           "required": true,
@@ -172,7 +172,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/signInRequest"
+                    "$ref": "#/components/schemas/logInRequest"
                   }
                 ]
               }
@@ -188,7 +188,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/signInResponse"
+                      "$ref": "#/components/schemas/logInResponse"
                     }
                   ]
                 }
@@ -204,13 +204,13 @@
         }
       }
     },
-    "/admin/signIn": {
+    "/admin/logIn": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
         "summary": "Log in with email and password for role admin",
-        "operationId": "adminsSignIn",
+        "operationId": "adminsLogIn",
         "requestBody": {
           "description": "Login user",
           "required": true,
@@ -220,7 +220,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/signInRequest"
+                    "$ref": "#/components/schemas/logInRequest"
                   }
                 ]
               }
@@ -236,7 +236,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/signInResponse"
+                      "$ref": "#/components/schemas/logInResponse"
                     }
                   ]
                 }
@@ -802,7 +802,7 @@
           }
         }
       },
-      "signInRequest": {
+      "logInRequest": {
         "type": "object",
         "properties": {
           "email": {
@@ -815,7 +815,7 @@
           }
         }
       },
-      "signInResponse": {
+      "logInResponse": {
         "type": "object",
         "properties": {
           "accessToken": {

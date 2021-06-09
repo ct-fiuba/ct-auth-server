@@ -5,8 +5,8 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
-  const usersSignIn = async (req, res, next) => {
-    authService.usersSignIn(req.body)
+  const usersLogIn = async (req, res, next) => {
+    authService.usersLogIn(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
@@ -17,14 +17,14 @@ module.exports = function authController(authService) {
       .catch(next);
   }
 
-  const ownersSignIn = async (req, res, next) => {
-    authService.ownersSignIn(req.body)
+  const ownersLogIn = async (req, res, next) => {
+    authService.ownersLogIn(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
 
-  const adminsSignIn = async (req, res, next) => {
-    authService.adminsSignIn(req.body)
+  const adminsLogIn = async (req, res, next) => {
+    authService.adminsLogIn(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
@@ -102,9 +102,9 @@ module.exports = function authController(authService) {
   }
 
   return {
-    usersSignIn,
-    ownersSignIn,
-    adminsSignIn,
+    usersLogIn,
+    ownersLogIn,
+    adminsLogIn,
     usersSignUp,
     ownersSignUp,
     usersValidateAccessToken,

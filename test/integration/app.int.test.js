@@ -126,7 +126,7 @@ describe('App test', () => {
     });
   });
 
-  describe('signIn', () => {
+  describe('logIn', () => {
     const validUser = {
       email: userEmail,
       password
@@ -137,16 +137,16 @@ describe('App test', () => {
       password: invalidPassword
     };
 
-    describe('sign in user success', () => {
+    describe('log in user success', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-          .post('/accounts:signInWithPassword?key=test', { ...validUser, returnSecureToken: true })
+          .post('/accounts:logInWithPassword?key=test', { ...validUser, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
       test('should return 200 with parse body', async () => {
         await request(server)
-          .post('/users/signIn')
+          .post('/users/logIn')
           .send(validUser)
           .then(res => {
             expect(res.status).toBe(200);
@@ -155,16 +155,16 @@ describe('App test', () => {
       });
     });
 
-    describe('sign in user failure', () => {
+    describe('log in user failure', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-          .post('/accounts:signInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
+          .post('/accounts:logInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
           .reply(400, { error: { message: 'INVALID_PASSWORD' } });
       });
 
       test('should return 400', async () => {
         await request(server)
-          .post('/users/signIn')
+          .post('/users/logIn')
           .send(invalidUser)
           .then(res => {
             expect(res.status).toBe(400);
@@ -174,7 +174,7 @@ describe('App test', () => {
 
       test('should validate body', async () => {
         await request(server)
-          .post('/users/signIn')
+          .post('/users/logIn')
           .then(res => {
             expect(res.status).toBe(400);
             expect(res.body).toStrictEqual({ reason: 'Missing value' });

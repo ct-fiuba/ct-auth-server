@@ -10,7 +10,7 @@ module.exports = function bodyValidatorMiddleware() {
     body(['email', 'password'], 'Missing value').exists(),
   ];
 
-  const signInValidations = [
+  const logInValidations = [
     body(['email', 'password'], 'Missing value').exists(),
   ];
 
@@ -62,7 +62,7 @@ module.exports = function bodyValidatorMiddleware() {
   return {
     usersSignUpValidations,
     ownersSignUpValidations,
-    signInValidations,
+    logInValidations,
     validateTokenValidations,
     refreshTokenValidations,
     deleteUserValidations,
