@@ -1,6 +1,5 @@
 const got = require('got');
 const { RequestError } = require('../errors/requestError');
-const { replaceOne } = require('../models/schemas/ValidGenuxToken');
 
 module.exports = function firebaseGateway(firebaseAuth) {
   const firebaseAPI = got.extend({
@@ -90,7 +89,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   };
 
   const logIn = async credentials => {
-    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('logInWithPassword', { ...credentials, returnSecureToken: true });
+    const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', { ...credentials, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
