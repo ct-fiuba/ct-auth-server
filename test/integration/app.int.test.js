@@ -140,7 +140,7 @@ describe('App test', () => {
     describe('log in user success', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-          .post('/accounts:logInWithPassword?key=test', { ...validUser, returnSecureToken: true })
+          .post('/accounts:signInWithPassword?key=test', { ...validUser, returnSecureToken: true })
           .reply(200, { idToken: accessToken, email: userEmail, refreshToken, expiresIn, localId });
       });
 
@@ -158,7 +158,7 @@ describe('App test', () => {
     describe('log in user failure', () => {
       beforeEach(() => {
         nock('https://identitytoolkit.googleapis.com/v1')
-          .post('/accounts:logInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
+          .post('/accounts:signInWithPassword?key=test', { ...invalidUser, returnSecureToken: true })
           .reply(400, { error: { message: 'INVALID_PASSWORD' } });
       });
 
