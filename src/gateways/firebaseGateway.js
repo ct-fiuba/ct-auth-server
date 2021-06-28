@@ -22,10 +22,20 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
-  const putUserDNI = (userId, dni) => {
-    const payload = {};
-    payload[userId] = {DNI: dni};
-    return firebaseDatabaseAPI.put("users.json", { json: payload })
+  const pushUserDNI = (userId, dni) => {
+    return firebaseDatabaseAPI.put(`users/${userId}/dni.json`, {json: {dni}})
+      .then(firebaseDatabaseResponse => {
+        return JSON.parse(firebaseDatabaseResponse.body);
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
+  const pushUserRole = (userId, role) => {
+    return firebaseDatabaseAPI.put(`users/${userId}/role.json`, {json: {role}})
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -37,7 +47,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const getUserDNI = (userId) => {
-    return firebaseDatabaseAPI.get(`users.json?orderBy="$key"&equalTo="${userId}"`)
+    return firebaseDatabaseAPI.get(`users/${userId}/dni.json?print=pretty`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -49,7 +59,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   }
 
   const getUserRole = (userId) => {
-    return firebaseDatabaseAPI.get(`role.json?orderBy="$key"&equalTo="${userId}"`)
+    return firebaseDatabaseAPI.get(`users/${userId}/role.json?print=pretty`)
       .then(firebaseDatabaseResponse => {
         return JSON.parse(firebaseDatabaseResponse.body);
       })
@@ -60,23 +70,122 @@ module.exports = function firebaseGateway(firebaseAuth) {
       });
   }
 
+  const deleteUserInFirebaseDB = (userId) => {
+    return firebaseDatabaseAPI.delete(`users/${userId}.json`)
+      .then(res => {
+        return userId;
+      })
+      .catch(error => {
+        const status = error.response.statusCode;
+        const message = JSON.parse(error.response.body).error.message;
+        throw new RequestError(message, status);
+      });
+  }
+
+
   const signUp = async userInfo => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signUp', { ...userInfo, returnSecureToken: true });
-    await putUserDNI(localId, userInfo.DNI);
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const signIn = async credentials => {
+  const logIn = async credentials => {
     const { idToken, email, refreshToken, expiresIn, localId } = await requestAuthFirebase('signInWithPassword', { ...credentials, returnSecureToken: true });
     return { accessToken: idToken, email, refreshToken, expiresIn, userId: localId };
   };
 
-  const validateIdToken = async idToken => {
-    return firebaseAuth.verifyIdToken(idToken, true)
-      .then(decodedToken => decodedToken.uid)
-      .catch(error => {
-        throw new RequestError(error.message, 401);
-      });
+  const usersSignUp = async userInfo => {
+    const response = await signUp(userInfo);
+    const dniResponse = await pushUserDNI(response.userId, userInfo.DNI);
+    const roleResponse = await pushUserRole(response.userId, 'user');
+    return {...response, ...dniResponse, ...roleResponse};
+  };
+
+  const ownersSignUp = async ownerInfo => {
+    const response = await signUp(ownerInfo);
+    const roleResponse = await pushUserRole(response.userId, 'owner');
+    return {...response, ...roleResponse};
+  };
+
+  const usersLogIn = async credentials => {
+    const response = await logIn(credentials);
+    let dniResponse = await getUserDNI(response.userId);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+      throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
+    }
+    if (!dniResponse.hasOwnProperty('dni')) {
+      dniResponse = {dni: 'Sin documento registrado'};
+    }
+    return {...response, ...dniResponse, ...roleResponse};
+  };
+
+  const ownersLogIn = async credentials => {
+    const response = await logIn(credentials);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+      throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
+    }
+    return {...response, ...roleResponse};
+  };
+
+  const adminsLogIn = async credentials => {
+    const response = await logIn(credentials);
+    const roleResponse = await getUserRole(response.userId);
+    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+      throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
+    }
+    return {...response, ...roleResponse};
+  };
+
+  const usersValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+        throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, err.status || 401);
+    }
+  };
+
+  const ownersValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+        throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, err.status || 401);
+    }
+  };
+
+  const adminsValidateIdToken = async idToken => {
+    try {
+      const decodedToken = await firebaseAuth.verifyIdToken(idToken, true);
+      if (!decodedToken.hasOwnProperty('uid')) {
+        throw new RequestError("El access token recibido no es válido", 401);
+      }
+      const userId = decodedToken.uid;
+      const roleResponse = await getUserRole(userId);
+      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+        throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
+      }
+      return userId;
+    } catch (err) {
+      throw new RequestError(err.message, err.status || 401);
+    }
   };
 
   const refreshToken  = async ({ refreshToken }) => {
@@ -99,7 +208,10 @@ module.exports = function firebaseGateway(firebaseAuth) {
 
   const deleteUser = async ({ userId }) => {
     return firebaseAuth.deleteUser(userId)
-      .then(() => userId)
+      .then(() => {
+        return deleteUserInFirebaseDB(userId)
+          .then((firebaseResponse) => firebaseResponse)
+      })
       .catch(function(error) {
         throw new RequestError(error.message, 400);
       });
@@ -137,15 +249,20 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "photoUrl": users[0]['photoUrl'],
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
-      "DNI": dni_response.hasOwnProperty(users[0]['localId']) ? dni_response[users[0]['localId']]['DNI'] : "Sin documento registrado",
-      "role": role_response.hasOwnProperty(users[0]['localId']) ? role_response[users[0]['localId']] : "regular"
+      "DNI": dni_response.hasOwnProperty('dni') ? dni_response['dni'] : "Sin documento registrado",
+      "role": role_response.hasOwnProperty('role') ? role_response['role'] : "Sin rol asignado"
     };
   };
 
   return {
-    signUp,
-    signIn,
-    validateIdToken,
+    usersSignUp,
+    usersLogIn,
+    ownersSignUp,
+    ownersLogIn,
+    adminsLogIn,
+    usersValidateIdToken,
+    ownersValidateIdToken,
+    adminsValidateIdToken,
     refreshToken,
     deleteUser,
     sendPasswordResetEmail,

@@ -1,5 +1,5 @@
 const firebaseGatewayFactory = require('../../src/gateways/firebaseGateway');
-const { RequestError } = require('../../src/errors/requestError');
+const nock = require('nock');
 
 let firebaseAuth;
 let firebaseGateway;
@@ -12,6 +12,7 @@ let invalidUserId = 'invalidUser1';
 beforeEach(() => {
   firebaseAuth = {
     verifyIdToken: jest.fn(),
+    getUserRole: jest.fn(),
     deleteUser: jest.fn()
   };
   firebaseGateway = firebaseGatewayFactory(firebaseAuth);
@@ -20,17 +21,20 @@ beforeEach(() => {
 describe('validateToken', () => {
   describe('Valid ID Token', () => {
     const decodedToken = {
-        uid: userId,
-        exp: 10,
-        iss: "bla.com",
+      uid: userId,
+      exp: 10,
+      iss: "bla.com",
     };
 
     beforeEach(() => {
       firebaseAuth.verifyIdToken.mockResolvedValue(decodedToken);
+      nock('https://ct-fiuba.firebaseio.com/rest')
+        .get('/users/validUser1/role.json?print=pretty')
+        .reply(200, { role: 'user' });
     });
 
     test('should respond successfully', async () => {
-      const result = await firebaseGateway.validateIdToken(validIdToken);
+      const result = await firebaseGateway.usersValidateIdToken(validIdToken);
       expect(firebaseAuth.verifyIdToken).toHaveBeenCalledWith(validIdToken, true);
       expect(result).toBe(userId);
     });
@@ -42,10 +46,10 @@ describe('validateToken', () => {
     });
 
     test('should fail with corresponding error', async () => {
-      const result = await firebaseGateway.validateIdToken(invalidIdToken)
+      const result = await firebaseGateway.usersValidateIdToken(invalidIdToken)
         .then(() => fail('Call should have failed!'))
         .catch(error => { return error });
-      
+
       expect(result).toHaveProperty('message', 'Crash!');
       expect(result).toHaveProperty('status', 401);
       expect(firebaseAuth.verifyIdToken).toHaveBeenCalledWith(invalidIdToken, true);
@@ -57,10 +61,13 @@ describe('deleteUser', () => {
   describe('Valid User ID', () => {
     beforeEach(() => {
       firebaseAuth.deleteUser.mockResolvedValue("ok!");
+      nock('https://ct-fiuba.firebaseio.com/rest')
+        .delete('/users/validUser1.json')
+        .reply(200);
     });
 
     test('should respond successfully', async () => {
-      const result = await firebaseGateway.deleteUser({userId});
+      const result = await firebaseGateway.deleteUser({ userId });
       expect(firebaseAuth.deleteUser).toHaveBeenCalledWith(userId);
       expect(result).toBe(userId);
     });
@@ -72,10 +79,10 @@ describe('deleteUser', () => {
     });
 
     test('should fail with corresponding error', async () => {
-      const result = await firebaseGateway.deleteUser({userId: invalidUserId})
+      const result = await firebaseGateway.deleteUser({ userId: invalidUserId })
         .then(() => fail('Call should have failed!'))
         .catch(error => { return error });
-      
+
       expect(result).toHaveProperty('message', 'Crash!');
       expect(result).toHaveProperty('status', 400);
       expect(firebaseAuth.deleteUser).toHaveBeenCalledWith(invalidUserId);

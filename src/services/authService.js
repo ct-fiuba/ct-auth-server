@@ -1,14 +1,34 @@
 module.exports = function authService(firebaseGateway, genuxTokenHandler = null) {
-  const signUp = userInfo => {
-    return firebaseGateway.signUp(userInfo);
+  const usersSignUp = userInfo => {
+    return firebaseGateway.usersSignUp(userInfo);
   };
 
-  const signIn = credentials => {
-    return firebaseGateway.signIn(credentials);
+  const usersLogIn = credentials => {
+    return firebaseGateway.usersLogIn(credentials);
   };
 
-  const validateAccessToken = ({ accessToken }) => {
-    return firebaseGateway.validateIdToken(accessToken);
+  const ownersSignUp = ownerInfo => {
+    return firebaseGateway.ownersSignUp(ownerInfo);
+  };
+
+  const ownersLogIn = credentials => {
+    return firebaseGateway.ownersLogIn(credentials);
+  };
+
+  const adminsLogIn = credentials => {
+    return firebaseGateway.adminsLogIn(credentials);
+  };
+
+  const usersValidateAccessToken = ({ accessToken }) => {
+    return firebaseGateway.usersValidateIdToken(accessToken);
+  };
+  
+  const ownersValidateAccessToken = ({ accessToken }) => {
+    return firebaseGateway.ownersValidateIdToken(accessToken);
+  };
+
+  const adminsValidateAccessToken = ({ accessToken }) => {
+    return firebaseGateway.adminsValidateIdToken(accessToken);
   };
 
   const refreshToken = token => {
@@ -20,7 +40,7 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
   };
 
   const generateGenuxToken = async accessToken =>
-    firebaseGateway.validateIdToken(accessToken).then(() => {
+    firebaseGateway.usersValidateIdToken(accessToken).then(() => {
       return genuxTokenHandler.createGenuxToken();
     });
 
@@ -49,9 +69,14 @@ module.exports = function authService(firebaseGateway, genuxTokenHandler = null)
   };
 
   return {
-    signUp,
-    signIn,
-    validateAccessToken,
+    usersSignUp,
+    ownersSignUp,
+    usersLogIn,
+    ownersLogIn,
+    adminsLogIn,
+    usersValidateAccessToken,
+    ownersValidateAccessToken,
+    adminsValidateAccessToken,
     refreshToken,
     deleteUser,
     generateGenuxToken,

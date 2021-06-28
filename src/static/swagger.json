@@ -12,13 +12,13 @@
     }
   ],
   "paths": {
-    "/signUp": {
+    "/users/signUp": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
         "summary": "create a new email and password user",
-        "operationId": "signUp",
+        "operationId": "usersSignUp",
         "requestBody": {
           "description": "Created user object",
           "required": true,
@@ -28,7 +28,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/signUpRequest"
+                    "$ref": "#/components/schemas/usersSignUpRequest"
                   }
                 ]
               }
@@ -60,13 +60,61 @@
         }
       }
     },
-    "/signIn": {
+    "/owners/signUp": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
-        "summary": "Log in with email and password",
-        "operationId": "signIn",
+        "summary": "create a new email and password owner",
+        "operationId": "ownersSignUp",
+        "requestBody": {
+          "description": "Created owner object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ownersSignUpRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/signUpResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields / Invalid visibility"
+          },
+          "409": {
+            "description": "User already registered"
+          }
+        }
+      }
+    },
+    "/users/logIn": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Log in with email and password for role user",
+        "operationId": "usersLogIn",
         "requestBody": {
           "description": "Login user",
           "required": true,
@@ -76,7 +124,7 @@
                 "type": "object",
                 "allOf": [
                   {
-                    "$ref": "#/components/schemas/signInRequest"
+                    "$ref": "#/components/schemas/logInRequest"
                   }
                 ]
               }
@@ -92,7 +140,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/signInResponse"
+                      "$ref": "#/components/schemas/logInResponse"
                     }
                   ]
                 }
@@ -101,17 +149,116 @@
           },
           "400": {
             "description": "Email not found / Invalid password / User disabled"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol user"
           }
         }
       }
     },
-    "/validateAccessToken": {
+    "/owners/logIn": {
       "post": {
         "tags": [
           "Authentication Service"
         ],
-        "summary": "Validate user ID token",
-        "operationId": "validateAccessToken",
+        "summary": "Log in with email and password for role owner",
+        "operationId": "ownersLogIn",
+        "requestBody": {
+          "description": "Login owner",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/logInRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/logInResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email not found / Invalid password / User disabled"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol owner"
+          }
+        }
+      }
+    },
+    "/admin/logIn": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Log in with email and password for role admin",
+        "operationId": "adminsLogIn",
+        "requestBody": {
+          "description": "Login user",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/logInRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/logInResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email not found / Invalid password / User disabled"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol admin"
+          }
+        }
+      }
+    },
+    "/users/validateAccessToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate user ID token for role user",
+        "operationId": "usersValidateAccessToken",
         "requestBody": {
           "description": "Validate Access token",
           "required": true,
@@ -137,7 +284,7 @@
                   "type": "object",
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/validAccessTokenResponse"
+                      "$ref": "#/components/schemas/validateAccessTokenResponse"
                     }
                   ]
                 }
@@ -146,6 +293,105 @@
           },
           "400": {
             "description": "Bad formatted or invalid token"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol user"
+          }
+        }
+      }
+    },
+    "/owners/validateAccessToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate user ID token for role owner",
+        "operationId": "ownersValidateAccessToken",
+        "requestBody": {
+          "description": "Validate Access token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/validateAccessTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/validateAccessTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad formatted or invalid token"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol owner"
+          }
+        }
+      }
+    },
+    "/admins/validateAccessToken": {
+      "post": {
+        "tags": [
+          "Authentication Service"
+        ],
+        "summary": "Validate user ID token for role admin",
+        "operationId": "adminsValidateAccessToken",
+        "requestBody": {
+          "description": "Validate Access token",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/validateAccessTokenRequest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/validateAccessTokenResponse"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad formatted or invalid token"
+          },
+          "404": {
+            "description": "El usuario logueado no tiene el rol admin"
           }
         }
       }
@@ -501,7 +747,7 @@
   },
   "components": {
     "schemas": {
-      "signUpRequest": {
+      "usersSignUpRequest": {
         "type": "object",
         "properties": {
           "email": {
@@ -515,6 +761,19 @@
           "DNI": {
             "type": "string",
             "example": "40404040"
+          }
+        }
+      },
+      "ownersSignUpRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "tomi@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword"
           }
         }
       },
@@ -543,7 +802,7 @@
           }
         }
       },
-      "signInRequest": {
+      "logInRequest": {
         "type": "object",
         "properties": {
           "email": {
@@ -556,7 +815,7 @@
           }
         }
       },
-      "signInResponse": {
+      "logInResponse": {
         "type": "object",
         "properties": {
           "accessToken": {
@@ -596,10 +855,6 @@
           "userId": {
             "type": "string",
             "example": "tRcfmLH7n6082nlDF"
-          },
-          "email": {
-            "type": "string",
-            "example": "tomi@gmail.com"
           }
         }
       },

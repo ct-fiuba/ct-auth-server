@@ -1,18 +1,48 @@
 module.exports = function authController(authService) {
-  const signUp = (req, res, next) => {
-    authService.signUp(req.body)
+  const usersSignUp = (req, res, next) => {
+    authService.usersSignUp(req.body)
       .then(response => res.status(200).json(response))
       .catch(next);
-  };
+  }
 
-  const signIn = async (req, res, next) => {
-    authService.signIn(req.body)
+  const usersLogIn = async (req, res, next) => {
+    authService.usersLogIn(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
 
-  const validateAccessToken = async (req, res, next) => {
-    authService.validateAccessToken(req.body)
+  const ownersSignUp = (req, res, next) => {
+    authService.ownersSignUp(req.body)
+      .then(response => res.status(200).json(response))
+      .catch(next);
+  }
+
+  const ownersLogIn = async (req, res, next) => {
+    authService.ownersLogIn(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const adminsLogIn = async (req, res, next) => {
+    authService.adminsLogIn(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const usersValidateAccessToken = async (req, res, next) => {
+    authService.usersValidateAccessToken(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const ownersValidateAccessToken = async (req, res, next) => {
+    authService.ownersValidateAccessToken(req.body)
+      .then(response => res.json(response))
+      .catch(next);
+  }
+
+  const adminsValidateAccessToken = async (req, res, next) => {
+    authService.adminsValidateAccessToken(req.body)
       .then(response => res.json(response))
       .catch(next);
   }
@@ -72,9 +102,14 @@ module.exports = function authController(authService) {
   }
 
   return {
-    signUp,
-    signIn,
-    validateAccessToken,
+    usersLogIn,
+    ownersLogIn,
+    adminsLogIn,
+    usersSignUp,
+    ownersSignUp,
+    usersValidateAccessToken,
+    ownersValidateAccessToken,
+    adminsValidateAccessToken,
     refreshToken,
     deleteUser,
     generateGenuxToken,
