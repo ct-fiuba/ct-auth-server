@@ -110,7 +110,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
     const response = await logIn(credentials);
     let dniResponse = await getUserDNI(response.userId);
     const roleResponse = await getUserRole(response.userId);
-    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+    if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
       throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
     }
     if (!dniResponse.hasOwnProperty('dni')) {
@@ -122,7 +122,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const ownersLogIn = async credentials => {
     const response = await logIn(credentials);
     const roleResponse = await getUserRole(response.userId);
-    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+    if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
       throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
     }
     return {...response, ...roleResponse};
@@ -131,7 +131,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
   const adminsLogIn = async credentials => {
     const response = await logIn(credentials);
     const roleResponse = await getUserRole(response.userId);
-    if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+    if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
       throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
     }
     return {...response, ...roleResponse};
@@ -145,7 +145,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       const userId = decodedToken.uid;
       const roleResponse = await getUserRole(userId);
-      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
+      if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'user') {
         throw new RequestError('El usuario logueado no tiene el rol "user"', 404);
       }
       return userId;
@@ -162,7 +162,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       const userId = decodedToken.uid;
       const roleResponse = await getUserRole(userId);
-      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
+      if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'owner') {
         throw new RequestError('El usuario logueado no tiene el rol "owner"', 404);
       }
       return userId;
@@ -179,7 +179,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       }
       const userId = decodedToken.uid;
       const roleResponse = await getUserRole(userId);
-      if (!roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
+      if (!roleResponse || !roleResponse.hasOwnProperty('role') || roleResponse['role'] !== 'admin') {
         throw new RequestError('El usuario logueado no tiene el rol "admin"', 404);
       }
       return userId;
@@ -250,7 +250,7 @@ module.exports = function firebaseGateway(firebaseAuth) {
       "lastLoginAt": users[0]['lastLoginAt'],
       "createdAt": users[0]['createdAt'],
       "DNI": dni_response.hasOwnProperty('dni') ? dni_response['dni'] : "Sin documento registrado",
-      "role": role_response.hasOwnProperty('role') ? role_response['role'] : "Sin rol asignado"
+      "role": (role_response && role_response.hasOwnProperty('role')) ? role_response['role'] : "Sin rol asignado"
     };
   };
 
